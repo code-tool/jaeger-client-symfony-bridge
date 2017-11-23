@@ -18,8 +18,8 @@
   },
   "repositories": [
     {
-      "type": "path",
-      "url": "../opentracing-php"
+      "type": "composer",
+      "url": "https://satis.ginsp.net"
     }
   ],
   "minimum-stability": "dev",
