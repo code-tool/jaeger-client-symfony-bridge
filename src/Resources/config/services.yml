@@ -16,7 +16,7 @@ services:
   jaeger.codec.text:
     class: CodeTool\OpenTracing\Codec\TextCodec
     tags:
-      - {name: 'jaeger.codec', name: 'text'}
+      - {name: 'jaeger.codec', alias: 'text'}
   jaeger.codec.registry:
     class: CodeTool\OpenTracing\Codec\CodecRegistry
   opentracing.sampler.always:

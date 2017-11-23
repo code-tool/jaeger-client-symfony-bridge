@@ -20,12 +20,12 @@ class CodecRegistryCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('jaeger.codec.registry');
         foreach ($container->findTaggedServiceIds('jaeger.codec') as $id => $tags) {
             foreach ($tags as $tag) {
-                if (false === array_key_exists('name', $tag)) {
+                if (false === array_key_exists('alias', $tag)) {
                     throw new \RuntimeException(
-                        sprintf('Required tag field %s is missing from definition', 'name')
+                        sprintf('Required tag field %s is missing from definition', 'alias')
                     );
                 }
-                $definition->addMethodCall('offsetSet', [$tag['name'], new Reference($id)]);
+                $definition->addMethodCall('offsetSet', [$tag['alias'], new Reference($id)]);
             }
         }
     }
