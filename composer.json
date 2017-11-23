@@ -16,12 +16,6 @@
   "suggest": {
     "ext-ds": "Efficient data structures"
   },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://satis.ginsp.net"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }
