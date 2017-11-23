@@ -28,7 +28,7 @@ services:
   opentracing.sampler.probabilistic:
     class: CodeTool\OpenTracing\Sampler\ProbabilisticSampler
     arguments: ['%env(opentrace_sampler_rate)%']
-  opentracing.sampler: '@opentracing.sampler.always'
+  opentracing.sampler: '@opentracing.sampler.probabilistic'
   opentracing.span.factory:
     class: CodeTool\OpenTracing\Span\Factory\SpanFactory
     arguments: ['@id.generator.span', '@opentracing.sampler']
