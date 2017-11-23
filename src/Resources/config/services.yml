@@ -2,7 +2,7 @@ parameters:
   env(thrift_host): localhost
   env(thrift_port): 6831
   env(thrift_buffer_size): 16384
-  env(opentrace_sampler_rate): 0.1
+  env(opentrace_sampler_rate): 0.01
   env(jaeger_context_format): 'text'
   env(jaeger_context_env): 'OPENTRACING_CTX'
   env(jaeger_context_header): 'opentracing-ctx'
