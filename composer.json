@@ -1,0 +1,26 @@
+{
+  "name": "code-tool/opentracing-symfony-bridge",
+  "autoload": {
+    "psr-4": {
+      "CodeTool\\Opentracing\\Symfony\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "symfony/event-dispatcher": "~3.3",
+    "symfony/console": "~3.3",
+    "symfony/http-kernel": "~3.3",
+    "code-tool/opentracing-php": "*"
+  },
+  "suggest": {
+    "ext-ds": "Efficient data structures"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../opentracing-php"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

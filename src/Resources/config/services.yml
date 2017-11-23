@@ -1,0 +1,57 @@
+parameters:
+  thrift.host: localhost
+  thrift.port: 6831
+  thrift.buffer.size: 16384
+  opentrace.sampler.rate: 0.1
+services:
+  ds.stack:
+    class: Ds\Stack
+    shared: false
+  id.generator.random:
+    class: CodeTool\OpenTracing\Id\RandomIntGenerator
+  id.generator.span: '@id.generator.random'
+  opentracing.sampler.always:
+    class: CodeTool\OpenTracing\Sampler\ConstSampler
+    arguments: [true]
+  opentracing.sampler.const:
+    class: CodeTool\OpenTracing\Sampler\ConstSampler
+    arguments: ['%kernel.debug%']
+  opentracing.sampler.probabilistic:
+    class: CodeTool\OpenTracing\Sampler\ProbabilisticSampler
+    arguments: ['%opentrace.sampler.rate%']
+  opentracing.sampler: '@opentracing.sampler.always'
+  opentracing.span.factory:
+    class: CodeTool\OpenTracing\Span\Factory\SpanFactory
+    arguments: ['@id.generator.span', '@opentracing.sampler']
+  client.thrift:
+    class: CodeTool\OpenTracing\Client\ThriftClient
+    arguments: ['%service_name%', '@thrift.agent']
+  thrift.agent:
+    class: CodeTool\OpenTracing\Jaeger\Thrift\Agent\AgentClient
+    arguments: ['@thrift.protocol']
+  thrift.protocol.compact:
+    class: Thrift\Protocol\TCompactProtocol
+    arguments: ['@thrift.transport']
+  thrift.protocol.binary:
+    class: Thrift\Protocol\TBinaryProtocol
+    arguments: ['@thrift.transport']
+  thrift.protocol: '@thrift.protocol.compact'
+  thrift.transport.udp:
+    class: CodeTool\OpenTracing\Transport\TUDPTransport
+    arguments: ['%thrift.host%', '%thrift.port%']
+  thrift.transport.buffered:
+    class: Thrift\Transport\TBufferedTransport
+    arguments: ['@thrift.transport.udp', '%thrift.buffer.size%', '%thrift.buffer.size%']
+    calls:
+      -
+        method: open
+        arguments: []
+  thrift.transport: '@thrift.transport.buffered'
+  opentracing.tracer:
+    class: CodeTool\OpenTracing\Tracer\Tracer
+    arguments: ['@ds.stack', '@opentracing.span.factory', '@client.thrift']
+  symfony.opentracing.tracer.bridge:
+    class: CodeTool\Opentracing\Symfony\Bridge\TracerBridge
+    arguments: ['@opentracing.tracer']
+    tags:
+      - {name: 'kernel.event_subscriber' }
