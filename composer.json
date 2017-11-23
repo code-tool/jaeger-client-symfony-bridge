@@ -11,7 +11,7 @@
     "symfony/console": "~3.3",
     "symfony/http-kernel": "~3.3",
     "symfony/dependency-injection": "~3.3",
-    "code-tool/opentracing-php": "*"
+    "code-tool/opentracing-php": "@stable"
   },
   "suggest": {
     "ext-ds": "Efficient data structures"
