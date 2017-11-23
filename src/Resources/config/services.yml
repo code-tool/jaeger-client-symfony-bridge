@@ -68,6 +68,8 @@ services:
       - '%env(jaeger_context_format)%'
       - '%env(jaeger_context_env)%'
       - '%env(jaeger_context_header)%'
+    tags:
+      - {name: 'kernel.event_subscriber' }
   symfony.opentracing.tracer.bridge:
     class: CodeTool\Opentracing\Symfony\Bridge\TracerBridge
     arguments: ['@opentracing.tracer']
