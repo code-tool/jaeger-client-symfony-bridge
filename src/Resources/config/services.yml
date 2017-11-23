@@ -10,6 +10,12 @@ services:
   id.generator.random:
     class: CodeTool\OpenTracing\Id\RandomIntGenerator
   id.generator.span: '@id.generator.random'
+  jaeger.codec.text:
+    class: CodeTool\OpenTracing\Codec\TextCodec
+    tags:
+      - {name: 'jaeger.codec', name: 'text'}
+  jaeger.codec.registry:
+    class: CodeTool\OpenTracing\Codec\CodecRegistry
   opentracing.sampler.always:
     class: CodeTool\OpenTracing\Sampler\ConstSampler
     arguments: [true]
