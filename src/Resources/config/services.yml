@@ -1,11 +1,11 @@
 parameters:
-  env(thrift.host): localhost
-  env(thrift.port): 6831
-  env(thrift.buffer_size): 16384
-  env(opentrace.sampler_rate): 0.1
-  env(jaeger.context.format): 'text'
-  env(jaeger.context.env): 'OPENTRACING_CTX'
-  env(context.header): 'opentracing-ctx'
+  env(thrift_host): localhost
+  env(thrift_port): 6831
+  env(thrift_buffer_size): 16384
+  env(opentrace_sampler_rate): 0.1
+  env(jaeger_context_format): 'text'
+  env(jaeger_context_env): 'OPENTRACING_CTX'
+  env(jaeger_context_header): 'opentracing-ctx'
 services:
   ds.stack:
     class: Ds\Stack
@@ -27,7 +27,7 @@ services:
     arguments: ['%kernel.debug%']
   opentracing.sampler.probabilistic:
     class: CodeTool\OpenTracing\Sampler\ProbabilisticSampler
-    arguments: ['%env(opentrace.sampler_rate)%']
+    arguments: ['%env(opentrace_sampler_rate)%']
   opentracing.sampler: '@opentracing.sampler.always'
   opentracing.span.factory:
     class: CodeTool\OpenTracing\Span\Factory\SpanFactory
@@ -47,10 +47,10 @@ services:
   thrift.protocol: '@thrift.protocol.compact'
   thrift.transport.udp:
     class: CodeTool\OpenTracing\Transport\TUDPTransport
-    arguments: ['%env(thrift.host)%', '%env(thrift.port)%']
+    arguments: ['%env(thrift_host)%', '%env(thrift_port)%']
   thrift.transport.buffered:
     class: Thrift\Transport\TBufferedTransport
-    arguments: ['@thrift.transport.udp', '%env(thrift.buffer_size)%', '%env(thrift.buffer_size)%']
+    arguments: ['@thrift.transport.udp', '%env(thrift_buffer_size)%', '%env(thrift_buffer_size)%']
     calls:
       -
         method: open
@@ -65,9 +65,9 @@ services:
       - '@opentracing.tracer'
       - '@jaeger.codec.registry'
       - '@request_stack'
-      - '%env(jaeger.context.format)%'
-      - '%env(jaeger.context.env)%'
-      - '%env(context.header)%'
+      - '%env(jaeger_context_format)%'
+      - '%env(jaeger_context_env)%'
+      - '%env(jaeger_context_header)%'
   symfony.opentracing.tracer.bridge:
     class: CodeTool\Opentracing\Symfony\Bridge\TracerBridge
     arguments: ['@opentracing.tracer']
