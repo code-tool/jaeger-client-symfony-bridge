@@ -14,6 +14,9 @@
     "symfony/dependency-injection": "~3.3",
     "code-tool/jaeger-client-php": "@stable"
   },
+  "provide": {
+    "code-tool/jaeger-client-php": "*"
+  },
   "suggest": {
     "ext-ds": "Efficient data structures"
   },
