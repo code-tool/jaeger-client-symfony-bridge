@@ -9,14 +9,12 @@ use Jaeger\Codec\CodecRegistry;
 use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
-use Jaeger\Tag\LongTag;
 use Jaeger\Tracer\InjectableInterface;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -66,7 +64,6 @@ class ContextInjector implements EventSubscriberInterface
     {
         return [
             ConsoleEvents::COMMAND => [['onCommand']],
-            //ConsoleEvents::TERMINATE => [['onFinish']],
             KernelEvents::REQUEST => [['onRequest']],
             KernelEvents::RESPONSE => [['onResponse']],
         ];
@@ -119,7 +116,7 @@ class ContextInjector implements EventSubscriberInterface
                     $this->getOperationName($event),
                     [
                         new HttpMethodTag($request->getMethod()),
-                        new HttpUriTag($request->getUri()),
+                        new HttpUriTag($request->getRequestUri()),
                     ]
                 )
         );
