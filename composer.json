@@ -12,7 +12,12 @@
     "symfony/console": "~3.3",
     "symfony/http-kernel": "~3.3",
     "symfony/dependency-injection": "~3.3",
+    "symfony/routing": "~3.3",
     "code-tool/jaeger-client-php": "@stable"
+  },
+  "require-dev": {
+    "php-ds/php-ds": "@stable",
+    "phpunit/phpunit": "@stable"
   },
   "suggest": {
     "ext-ds": "Efficient data structures"

@@ -3,9 +3,13 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Bridge;
 
+use Ds\Stack;
 use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
+use Jaeger\Http\HttpMethodTag;
+use Jaeger\Http\HttpUriTag;
 use Jaeger\Tracer\InjectableInterface;
+use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -15,6 +19,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ContextInjector implements EventSubscriberInterface
 {
+    private $spans;
+
+    private $injectable;
+
     private $tracer;
 
     /**
@@ -31,13 +39,17 @@ class ContextInjector implements EventSubscriberInterface
     private $headerName;
 
     public function __construct(
-        InjectableInterface $tracer,
+        Stack $stack,
+        InjectableInterface $injectable,
+        TracerInterface $tracer,
         CodecRegistry $registry,
         RequestStack $requestStack,
         string $format,
         string $envName,
         string $headerName
     ) {
+        $this->spans = $stack;
+        $this->injectable = $injectable;
         $this->tracer = $tracer;
         $this->registry = $registry;
         $this->requestStack = $requestStack;
@@ -50,8 +62,29 @@ class ContextInjector implements EventSubscriberInterface
     {
         return [
             ConsoleEvents::COMMAND => [['onCommand']],
+            ConsoleEvents::TERMINATE => [['onFinish']],
             KernelEvents::REQUEST => [['onRequest']],
+            KernelEvents::FINISH_REQUEST => [['onFinish']],
         ];
+    }
+
+    public function getOperationName(GetResponseEvent $event)
+    {
+        switch ($event->getRequestType()) {
+            case HttpKernelInterface::MASTER_REQUEST:
+                return 'symfony.request';
+            default:
+                return 'symfony.subrequest';
+        }
+    }
+
+    public function onFinish()
+    {
+        while (0 !== $this->spans->count()) {
+            $this->tracer->finish($this->spans->pop());
+        }
+
+        return $this;
     }
 
     public function onCommand()
@@ -62,24 +95,32 @@ class ContextInjector implements EventSubscriberInterface
         if (null === ($context = $this->registry[$this->format]->decode($data))) {
             return $this;
         }
-        $this->tracer->assign($context);
+        $this->injectable->assign($context);
 
         return $this;
     }
 
     public function onRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
-            return $this;
+        $request = $event->getRequest();
+        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()
+            && $request->headers->has($this->headerName)
+            && ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
+            $this->injectable->assign($context);
         }
-        if (false === $event->getRequest()->headers->has($this->headerName)) {
-            return $this;
-        }
-        if (null === ($context = $this->registry[$this->format]
-                ->decode($event->getRequest()->headers->get($this->headerName)))) {
-            return $this;
-        }
-        $this->tracer->assign($context);
+
+        $this->spans->push(
+            [
+                $this->tracer
+                    ->start(
+                        $this->getOperationName($event),
+                        [
+                            new HttpMethodTag($request->getMethod()),
+                            new HttpUriTag($request->getUri()),
+                        ]
+                    )
+            ]
+        );
 
         return $this;
     }

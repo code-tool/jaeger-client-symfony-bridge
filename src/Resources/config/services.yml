@@ -62,6 +62,8 @@ services:
   jaeger.context.injector:
     class: Jaeger\Symfony\Bridge\ContextInjector
     arguments:
+      - '@ds.stack'
+      - '@jaeger.tracer'
       - '@jaeger.tracer'
       - '@jaeger.codec.registry'
       - '@request_stack'
