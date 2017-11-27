@@ -9,7 +9,7 @@ imports:
 and register this compiler pass in your Kernel
 ```$xslt
 Kernel::build
-/**
+   /**
      * @inheritDoc
      */
     protected function build(\Symfony\Component\DependencyInjection\ContainerBuilder $container)
