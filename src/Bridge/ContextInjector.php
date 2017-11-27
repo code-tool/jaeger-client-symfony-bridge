@@ -13,11 +13,13 @@ use Jaeger\Tracer\InjectableInterface;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\RouterInterface;
 
 class ContextInjector implements EventSubscriberInterface
 {
@@ -34,6 +36,8 @@ class ContextInjector implements EventSubscriberInterface
 
     private $requestStack;
 
+    private $router;
+
     private $format;
 
     private $envName;
@@ -46,6 +50,7 @@ class ContextInjector implements EventSubscriberInterface
         TracerInterface $tracer,
         CodecRegistry $registry,
         RequestStack $requestStack,
+        RouterInterface $router,
         string $format,
         string $envName,
         string $headerName
@@ -55,6 +60,7 @@ class ContextInjector implements EventSubscriberInterface
         $this->tracer = $tracer;
         $this->registry = $registry;
         $this->requestStack = $requestStack;
+        $this->router = $router;
         $this->format = $format;
         $this->envName = $envName;
         $this->headerName = $headerName;
@@ -69,14 +75,16 @@ class ContextInjector implements EventSubscriberInterface
         ];
     }
 
-    public function getOperationName(GetResponseEvent $event)
+    public function getOperationName(Request $request)
     {
-        switch ($event->getRequestType()) {
-            case HttpKernelInterface::MASTER_REQUEST:
-                return 'symfony.request';
-            default:
-                return 'symfony.subrequest';
+        if (null === ($routeName = $request->attributes->get('_route', null))) {
+            return $request->getRequestUri();
         }
+        if (null === ($route = $this->router->getRouteCollection()->get($routeName))) {
+            return $request->getRequestUri();
+        }
+
+        return sprintf('%s %s', strtoupper($request->getMethod()), $route->getPath());
     }
 
     public function onResponse(FilterResponseEvent $event)
@@ -113,7 +121,7 @@ class ContextInjector implements EventSubscriberInterface
         $this->spans->push(
             $this->tracer
                 ->start(
-                    $this->getOperationName($event),
+                    $this->getOperationName($request),
                     [
                         new HttpMethodTag($request->getMethod()),
                         new HttpUriTag($request->getRequestUri()),

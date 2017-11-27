@@ -67,6 +67,7 @@ services:
       - '@jaeger.tracer'
       - '@jaeger.codec.registry'
       - '@request_stack'
+      - '@router'
       - '%env(jaeger_context_format)%'
       - '%env(jaeger_context_env)%'
       - '%env(jaeger_context_header)%'
