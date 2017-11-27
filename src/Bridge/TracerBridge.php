@@ -21,11 +21,11 @@ class TracerBridge implements EventSubscriberInterface
     {
         return [
             ConsoleEvents::TERMINATE => [['onTerminate']],
-            KernelEvents::TERMINATE => [['onTerminate']],
+            KernelEvents::FINISH_REQUEST => [['onFinishRequest']],
         ];
     }
 
-    public function onTerminate()
+    public function onFinishRequest()
     {
         $this->tracer->flush();
     }
