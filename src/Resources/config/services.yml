@@ -60,7 +60,7 @@ services:
     class: Jaeger\Tracer\Tracer
     arguments: ['@ds.stack', '@jaeger.span.factory', '@client.thrift']
   jaeger.context.injector:
-    class: CodeTool\Opentracing\Symfony\Bridge\ContextInjector
+    class: Jaeger\Symfony\Bridge\ContextInjector
     arguments:
       - '@jaeger.tracer'
       - '@jaeger.codec.registry'
@@ -71,7 +71,7 @@ services:
     tags:
       - {name: 'kernel.event_subscriber' }
   symfony.jaeger.tracer.bridge:
-    class: CodeTool\Opentracing\Symfony\Bridge\TracerBridge
+    class: Jaeger\Symfony\Bridge\TracerBridge
     arguments: ['@jaeger.tracer']
     tags:
       - {name: 'kernel.event_subscriber' }
