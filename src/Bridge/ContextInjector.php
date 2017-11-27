@@ -9,6 +9,8 @@ use CodeTool\OpenTracing\Tracer\InjectableInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ContextInjector implements EventSubscriberInterface
@@ -65,15 +67,16 @@ class ContextInjector implements EventSubscriberInterface
         return $this;
     }
 
-    public function onRequest()
+    public function onRequest(GetResponseEvent $event)
     {
-        if ($this->requestStack->getMasterRequest() !== ($request = $this->requestStack->getCurrentRequest())) {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
             return $this;
         }
-        if (false === $request->headers->has($this->headerName)) {
+        if (false === $event->getRequest()->headers->has($this->headerName)) {
             return $this;
         }
-        if (null === ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
+        if (null === ($context = $this->registry[$this->format]
+                ->decode($event->getRequest()->headers->get($this->headerName)))) {
             return $this;
         }
         $this->tracer->assign($context);
