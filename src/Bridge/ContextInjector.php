@@ -84,7 +84,7 @@ class ContextInjector implements EventSubscriberInterface
             return $request->getRequestUri();
         }
 
-        return sprintf('%s %s', strtoupper($request->getMethod()), $route->getPath());
+        return $route->getPath();
     }
 
     public function onResponse(FilterResponseEvent $event)
