@@ -6,13 +6,17 @@ namespace Jaeger\Symfony\Bridge;
 use Ds\Stack;
 use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
+use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
+use Jaeger\Tag\LongTag;
 use Jaeger\Tracer\InjectableInterface;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -62,9 +66,9 @@ class ContextInjector implements EventSubscriberInterface
     {
         return [
             ConsoleEvents::COMMAND => [['onCommand']],
-            ConsoleEvents::TERMINATE => [['onFinish']],
+            //ConsoleEvents::TERMINATE => [['onFinish']],
             KernelEvents::REQUEST => [['onRequest']],
-            KernelEvents::FINISH_REQUEST => [['onFinish']],
+            KernelEvents::RESPONSE => [['onResponse']],
         ];
     }
 
@@ -78,11 +82,11 @@ class ContextInjector implements EventSubscriberInterface
         }
     }
 
-    public function onFinish()
+    public function onResponse(FilterResponseEvent $event)
     {
-        while (0 !== $this->spans->count()) {
-            $this->tracer->finish($this->spans->pop());
-        }
+        $this->tracer->finish(
+            $this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode()))
+        );
 
         return $this;
     }
