@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace CodeTool\Opentracing\Symfony\Bridge;
+namespace Jaeger\Symfony\Bridge;
 
-use CodeTool\OpenTracing\Tracer\FlushableInterface;
+use Jaeger\Tracer\FlushableInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;

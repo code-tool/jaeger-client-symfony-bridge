@@ -4,39 +4,39 @@ parameters:
   env(thrift_buffer_size): 16384
   env(opentrace_sampler_rate): 0.01
   env(jaeger_context_format): 'text'
-  env(jaeger_context_env): 'OPENTRACING_CTX'
-  env(jaeger_context_header): 'opentracing-ctx'
+  env(jaeger_context_env): 'UBER_TRACE_ID'
+  env(jaeger_context_header): 'uber-trace-id'
 services:
   ds.stack:
     class: Ds\Stack
     shared: false
   id.generator.random:
-    class: CodeTool\OpenTracing\Id\RandomIntGenerator
+    class: Jaeger\Id\RandomIntGenerator
   id.generator.span: '@id.generator.random'
   jaeger.codec.text:
-    class: CodeTool\OpenTracing\Codec\TextCodec
+    class: Jaeger\Codec\TextCodec
     tags:
       - {name: 'jaeger.codec', alias: 'text'}
   jaeger.codec.registry:
-    class: CodeTool\OpenTracing\Codec\CodecRegistry
-  opentracing.sampler.always:
-    class: CodeTool\OpenTracing\Sampler\ConstSampler
+    class: Jaeger\Codec\CodecRegistry
+  jaeger.sampler.always:
+    class: Jaeger\Sampler\ConstSampler
     arguments: [true]
-  opentracing.sampler.const:
-    class: CodeTool\OpenTracing\Sampler\ConstSampler
+  jaeger.sampler.const:
+    class: Jaeger\Sampler\ConstSampler
     arguments: ['%kernel.debug%']
-  opentracing.sampler.probabilistic:
-    class: CodeTool\OpenTracing\Sampler\ProbabilisticSampler
+  jaeger.sampler.probabilistic:
+    class: Jaeger\Sampler\ProbabilisticSampler
     arguments: ['%env(opentrace_sampler_rate)%']
-  opentracing.sampler: '@opentracing.sampler.probabilistic'
-  opentracing.span.factory:
-    class: CodeTool\OpenTracing\Span\Factory\SpanFactory
-    arguments: ['@id.generator.span', '@opentracing.sampler']
+  jaeger.sampler: '@jaeger.sampler.probabilistic'
+  jaeger.span.factory:
+    class: Jaeger\Span\Factory\SpanFactory
+    arguments: ['@id.generator.span', '@jaeger.sampler']
   client.thrift:
-    class: CodeTool\OpenTracing\Client\ThriftClient
+    class: Jaeger\Client\ThriftClient
     arguments: ['%service_name%', '@thrift.agent']
   thrift.agent:
-    class: CodeTool\OpenTracing\Jaeger\Thrift\Agent\AgentClient
+    class: Jaeger\Thrift\Agent\AgentClient
     arguments: ['@thrift.protocol']
   thrift.protocol.compact:
     class: Thrift\Protocol\TCompactProtocol
@@ -46,7 +46,7 @@ services:
     arguments: ['@thrift.transport']
   thrift.protocol: '@thrift.protocol.compact'
   thrift.transport.udp:
-    class: CodeTool\OpenTracing\Transport\TUDPTransport
+    class: Jaeger\Transport\TUDPTransport
     arguments: ['%env(thrift_host)%', '%env(thrift_port)%']
   thrift.transport.buffered:
     class: Thrift\Transport\TBufferedTransport
@@ -56,13 +56,13 @@ services:
         method: open
         arguments: []
   thrift.transport: '@thrift.transport.buffered'
-  opentracing.tracer:
-    class: CodeTool\OpenTracing\Tracer\Tracer
-    arguments: ['@ds.stack', '@opentracing.span.factory', '@client.thrift']
-  opentracing.context.injector:
+  jaeger.tracer:
+    class: Jaeger\Tracer\Tracer
+    arguments: ['@ds.stack', '@jaeger.span.factory', '@client.thrift']
+  jaeger.context.injector:
     class: CodeTool\Opentracing\Symfony\Bridge\ContextInjector
     arguments:
-      - '@opentracing.tracer'
+      - '@jaeger.tracer'
       - '@jaeger.codec.registry'
       - '@request_stack'
       - '%env(jaeger_context_format)%'
@@ -70,8 +70,8 @@ services:
       - '%env(jaeger_context_header)%'
     tags:
       - {name: 'kernel.event_subscriber' }
-  symfony.opentracing.tracer.bridge:
+  symfony.jaeger.tracer.bridge:
     class: CodeTool\Opentracing\Symfony\Bridge\TracerBridge
-    arguments: ['@opentracing.tracer']
+    arguments: ['@jaeger.tracer']
     tags:
       - {name: 'kernel.event_subscriber' }

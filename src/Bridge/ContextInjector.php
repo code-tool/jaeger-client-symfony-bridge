@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace CodeTool\Opentracing\Symfony\Bridge;
+namespace Jaeger\Symfony\Bridge;
 
-use CodeTool\OpenTracing\Codec\CodecInterface;
-use CodeTool\OpenTracing\Codec\CodecRegistry;
-use CodeTool\OpenTracing\Tracer\InjectableInterface;
+use Jaeger\Codec\CodecInterface;
+use Jaeger\Codec\CodecRegistry;
+use Jaeger\Tracer\InjectableInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;

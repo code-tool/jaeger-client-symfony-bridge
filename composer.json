@@ -1,17 +1,17 @@
 {
-  "name": "code-tool/opentracing-symfony-bridge",
+  "name": "code-tool/jaeger-client-symfony-bridge",
   "autoload": {
     "psr-4": {
-      "CodeTool\\Opentracing\\Symfony\\": "src/"
+      "Jaeger\\Symfony\\": "src/"
     }
   },
   "require": {
-    "php": ">=7.1",
+    "php": "^5.6 | ^7.1",
     "symfony/event-dispatcher": "~3.3",
     "symfony/console": "~3.3",
     "symfony/http-kernel": "~3.3",
     "symfony/dependency-injection": "~3.3",
-    "code-tool/opentracing-php": "@stable"
+    "code-tool/jaeger-client-php": "@stable"
   },
   "suggest": {
     "ext-ds": "Efficient data structures"
