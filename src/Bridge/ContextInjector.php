@@ -118,14 +118,16 @@ class ContextInjector implements EventSubscriberInterface
         }
 
         $this->spans->push(
-            $this->tracer
-                ->start(
-                    $this->getOperationName($request),
-                    [
-                        new HttpMethodTag($request->getMethod()),
-                        new HttpUriTag($request->getRequestUri()),
-                    ]
-                )
+            [
+                $this->tracer
+                    ->start(
+                        $this->getOperationName($request),
+                        [
+                            new HttpMethodTag($request->getMethod()),
+                            new HttpUriTag($request->getRequestUri()),
+                        ]
+                    )
+            ]
         );
 
         return $this;
