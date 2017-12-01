@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Bridge;
 
-use Ds\Stack;
 use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
 use Jaeger\Http\HttpCodeTag;
@@ -45,7 +44,7 @@ class ContextInjector implements EventSubscriberInterface
     private $headerName;
 
     public function __construct(
-        Stack $stack,
+        \SplStack $stack,
         InjectableInterface $injectable,
         TracerInterface $tracer,
         CodecRegistry $registry,

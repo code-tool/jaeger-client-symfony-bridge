@@ -7,8 +7,8 @@ parameters:
   env(jaeger_context_env): 'UBER_TRACE_ID'
   env(jaeger_context_header): 'uber-trace-id'
 services:
-  ds.stack:
-    class: Ds\Stack
+  spl.stack:
+    class: \SplStack
     shared: false
   id.generator.random:
     class: Jaeger\Id\RandomIntGenerator
@@ -58,11 +58,11 @@ services:
   thrift.transport: '@thrift.transport.buffered'
   jaeger.tracer:
     class: Jaeger\Tracer\Tracer
-    arguments: ['@ds.stack', '@jaeger.span.factory', '@client.thrift']
+    arguments: ['@spl.stack', '@jaeger.span.factory', '@client.thrift']
   jaeger.context.injector:
     class: Jaeger\Symfony\Bridge\ContextInjector
     arguments:
-      - '@ds.stack'
+      - '@spl.stack'
       - '@jaeger.tracer'
       - '@jaeger.tracer'
       - '@jaeger.codec.registry'
