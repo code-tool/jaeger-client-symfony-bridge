@@ -76,9 +76,16 @@ class ContextInjector implements EventSubscriberInterface
 
     public function getOperationName(Request $request)
     {
+        if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
+            return ($controller = $request->attributes->get('_controller', null))
+                ? 'fragment'
+                : sprintf('fragment.%s', $controller);
+        }
+
         if (null === ($routeName = $request->attributes->get('_route', null))) {
             return $request->getRequestUri();
         }
+
         if (null === ($route = $this->router->getRouteCollection()->get($routeName))) {
             return $request->getRequestUri();
         }
