@@ -19,6 +19,10 @@ services:
       - {name: 'jaeger.codec', alias: 'text'}
   jaeger.codec.registry:
     class: Jaeger\Codec\CodecRegistry
+    calls:
+      -
+        method: offsetSet
+        arguments: ['text', '@jaeger.codec.text']
   jaeger.sampler.always:
     class: Jaeger\Sampler\ConstSampler
     arguments: [true]
