@@ -122,6 +122,12 @@ class ContextInjector implements EventSubscriberInterface
             && $request->headers->has($this->headerName)
             && ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
             $this->injectable->assign($context);
+
+            if ($request->server->has('REQUEST_TIME_FLOAT')) {
+                $span = $this->tracer->start('symfony.start')
+                    ->start((int)($request->server->get('REQUEST_TIME_FLOAT') * 1000000));
+                $this->tracer->finish($span);
+            }
         }
 
         $this->spans->push(
