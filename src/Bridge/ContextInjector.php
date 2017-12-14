@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class ContextInjector implements EventSubscriberInterface
@@ -122,12 +123,6 @@ class ContextInjector implements EventSubscriberInterface
             && $request->headers->has($this->headerName)
             && ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
             $this->injectable->assign($context);
-
-            if ($request->server->has('REQUEST_TIME_FLOAT')) {
-                $span = $this->tracer->start('symfony.start')
-                    ->start((int)($request->server->get('REQUEST_TIME_FLOAT') * 1000000));
-                $this->tracer->finish($span);
-            }
         }
 
         $this->spans->push(
@@ -139,7 +134,15 @@ class ContextInjector implements EventSubscriberInterface
                         new HttpUriTag($request->getRequestUri()),
                     ]
                 )
+                ->start((int)($request->server->get('REQUEST_TIME_FLOAT', time()) * 1000000))
         );
+
+        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+            $span = $this->tracer
+                ->start('app.start')
+                ->start((int)($request->server->get('REQUEST_TIME_FLOAT', time()) * 1000000));
+            $this->tracer->finish($span);
+        }
 
         return $this;
     }
