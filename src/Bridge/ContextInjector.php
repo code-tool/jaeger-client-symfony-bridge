@@ -124,24 +124,22 @@ class ContextInjector implements EventSubscriberInterface
             $this->injectable->assign($context);
         }
 
-        $this->spans->push(
-            $this->tracer
-                ->start(
-                    $this->getOperationName($request),
-                    [
-                        new HttpMethodTag($request->getMethod()),
-                        new HttpUriTag($request->getRequestUri()),
-                    ]
-                )
-                ->start((int)($request->server->get('REQUEST_TIME_FLOAT', time()) * 1000000))
+        $requestSpan = $this->tracer->start(
+            $this->getOperationName($request),
+            [
+                new HttpMethodTag($request->getMethod()),
+                new HttpUriTag($request->getRequestUri()),
+            ]
         );
 
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+            $requestSpan->start((int)($request->server->get('REQUEST_TIME_FLOAT', time()) * 1000000));
             $span = $this->tracer
                 ->start('app.start')
                 ->start((int)($request->server->get('REQUEST_TIME_FLOAT', time()) * 1000000));
             $this->tracer->finish($span);
         }
+        $this->spans->push($requestSpan);
 
         return $this;
     }
