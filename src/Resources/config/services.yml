@@ -6,9 +6,11 @@ parameters:
   env(jaeger_context_format): 'text'
   env(jaeger_context_env): 'UBER_TRACE_ID'
   env(jaeger_context_header): 'uber-trace-id'
+  kernel.debug: false
+  service_name: app
 services:
   spl.stack:
-    class: \SplStack
+    class: SplStack
     shared: false
   id.generator.random:
     class: Jaeger\Id\RandomIntGenerator
