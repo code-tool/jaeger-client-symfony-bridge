@@ -1,7 +1,7 @@
 parameters:
-  env(thrift_host): localhost
-  env(thrift_port): 6831
-  env(thrift_buffer_size): 16384
+  env(jaeger_host): localhost
+  env(jaeger_port): 6831
+  env(jaeger_buffer_size): 16384
   env(opentrace_sampler_rate): 0.01
   env(jaeger_context_format): 'text'
   env(jaeger_context_env): 'UBER_TRACE_ID'
@@ -52,10 +52,10 @@ services:
   thrift.protocol: '@thrift.protocol.compact'
   thrift.transport.udp:
     class: Jaeger\Transport\TUDPTransport
-    arguments: ['%env(thrift_host)%', '%env(thrift_port)%']
+    arguments: ['%env(jaeger_host)%', '%env(jaeger_port)%']
   thrift.transport.buffered:
     class: Thrift\Transport\TBufferedTransport
-    arguments: ['@thrift.transport.udp', '%env(thrift_buffer_size)%', '%env(thrift_buffer_size)%']
+    arguments: ['@thrift.transport.udp', '%env(jaeger_buffer_size)%', '%env(jaeger_buffer_size)%']
     calls:
       -
         method: open
