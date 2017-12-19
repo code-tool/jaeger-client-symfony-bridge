@@ -9,6 +9,7 @@ use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
 use Jaeger\Tag\DoubleTag;
+use Jaeger\Tag\LongTag;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\InjectableInterface;
 use Jaeger\Tracer\TracerInterface;
@@ -141,7 +142,7 @@ class ContextInjector implements EventSubscriberInterface
             $requestSpan
                 ->addTag(new StringTag('time.source', $source))
                 ->addTag(new DoubleTag('time.value', $value))
-                ->addTag(new DoubleTag('time.micro', $startTime))
+                ->addTag(new LongTag('time.micro', $startTime))
                 ->start($startTime);
             $this->tracer->finish($this->tracer->start('app.start')->start($startTime));
         }
