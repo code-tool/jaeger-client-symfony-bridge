@@ -1,11 +1,11 @@
 parameters:
-  env(jaeger_host): localhost
-  env(jaeger_port): 6831
-  env(jaeger_buffer_size): 16384
-  env(opentrace_sampler_rate): 0.01
-  env(jaeger_context_format): 'text'
-  env(jaeger_context_env): 'UBER_TRACE_ID'
-  env(jaeger_context_header): 'uber-trace-id'
+  env(JAEGER_HOST): localhost
+  env(JAEGER_PORT): 6831
+  env(JAEGER_BUFFER_SIZE): 16384
+  env(OPENTRACE_SAMPLER_RATE): 0.01
+  env(JAEGER_CONTEXT_FORMAT): 'text'
+  env(JAEGER_CONTEXT_ENV): 'UBER_TRACE_ID'
+  env(JAEGER_CONTEXT_HEADER): 'uber-trace-id'
   service_name: app
 services:
   spl.stack:
@@ -32,7 +32,7 @@ services:
     arguments: ['%kernel.debug%']
   jaeger.sampler.probabilistic:
     class: Jaeger\Sampler\ProbabilisticSampler
-    arguments: ['%env(opentrace_sampler_rate)%']
+    arguments: ['%env(OPENTRACE_SAMPLER_RATE)%']
   jaeger.sampler: '@jaeger.sampler.probabilistic'
   jaeger.span.factory:
     class: Jaeger\Span\Factory\SpanFactory
@@ -52,10 +52,10 @@ services:
   thrift.protocol: '@thrift.protocol.compact'
   thrift.transport.udp:
     class: Jaeger\Transport\TUDPTransport
-    arguments: ['%env(jaeger_host)%', '%env(jaeger_port)%']
+    arguments: ['%env(JAEGER_HOST)%', '%env(JAEGER_PORT)%']
   thrift.transport.buffered:
     class: Thrift\Transport\TBufferedTransport
-    arguments: ['@thrift.transport.udp', '%env(jaeger_buffer_size)%', '%env(jaeger_buffer_size)%']
+    arguments: ['@thrift.transport.udp', '%env(JAEGER_BUFFER_SIZE)%', '%env(JAEGER_BUFFER_SIZE)%']
     calls:
       -
         method: open
@@ -73,9 +73,9 @@ services:
       - '@jaeger.codec.registry'
       - '@request_stack'
       - '@router'
-      - '%env(jaeger_context_format)%'
-      - '%env(jaeger_context_env)%'
-      - '%env(jaeger_context_header)%'
+      - '%env(JAEGER_CONTEXT_FORMAT)%'
+      - '%env(JAEGER_CONTEXT_ENV)%'
+      - '%env(JAEGER_CONTEXT_HEADER)%'
     tags:
       - {name: 'kernel.event_subscriber' }
   symfony.jaeger.tracer.bridge:
