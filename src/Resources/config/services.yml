@@ -2,7 +2,7 @@ parameters:
   env(JAEGER_HOST): localhost
   env(JAEGER_PORT): 6831
   env(JAEGER_BUFFER_SIZE): 16384
-  env(OPENTRACE_SAMPLER_RATE): 0.01
+  env(OPENTRACE_SAMPLER_RATE): 0.001
   env(JAEGER_CONTEXT_FORMAT): 'text'
   env(JAEGER_CONTEXT_ENV): 'UBER_TRACE_ID'
   env(JAEGER_CONTEXT_HEADER): 'uber-trace-id'
