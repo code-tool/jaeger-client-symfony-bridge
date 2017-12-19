@@ -8,6 +8,8 @@ use Jaeger\Codec\CodecRegistry;
 use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
+use Jaeger\Tag\DoubleTag;
+use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\InjectableInterface;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\Console\ConsoleEvents;
@@ -133,8 +135,14 @@ class ContextInjector implements EventSubscriberInterface
         );
 
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            $startTime = (int)($request->server->get('REQUEST_TIME_FLOAT', microtime(true)) * 1000000);
-            $requestSpan->start($startTime);
+            $source = $request->server->has('REQUEST_TIME_FLOAT') ? 'header' : 'microtime';
+            $value = $request->server->get('REQUEST_TIME_FLOAT', microtime(true));
+            $startTime = (int)($value * 1000000);
+            $requestSpan
+                ->addTag(new StringTag('time.source', $source))
+                ->addTag(new DoubleTag('time.value', $value))
+                ->addTag(new DoubleTag('time.micro', $startTime))
+                ->start($startTime);
             $this->tracer->finish($this->tracer->start('app.start')->start($startTime));
         }
         $this->spans->push($requestSpan);
