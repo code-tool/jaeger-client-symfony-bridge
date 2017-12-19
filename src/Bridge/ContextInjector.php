@@ -133,7 +133,7 @@ class ContextInjector implements EventSubscriberInterface
         );
 
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            $startTime = (int)($request->server->get('REQUEST_TIME_FLOAT', time()) * 1000000);
+            $startTime = (int)($request->server->get('REQUEST_TIME_FLOAT', microtime(true)) * 1000000);
             $requestSpan->start($startTime);
             $this->tracer->finish($this->tracer->start('app.start')->start($startTime));
         }
