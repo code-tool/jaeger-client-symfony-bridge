@@ -60,7 +60,7 @@ services:
       -
         method: open
         arguments: []
-  thrift.transport: '@thrift.transport.buffered'
+  thrift.transport: '@thrift.transport.udp'
   jaeger.tracer:
     class: Jaeger\Tracer\Tracer
     arguments: ['@spl.stack', '@jaeger.span.factory', '@client.thrift']
