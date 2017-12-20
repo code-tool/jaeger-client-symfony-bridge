@@ -67,15 +67,24 @@ services:
   jaeger.context.injector:
     class: Jaeger\Symfony\Bridge\ContextInjector
     arguments:
-      - '@spl.stack'
       - '@jaeger.tracer'
       - '@jaeger.tracer'
       - '@jaeger.codec.registry'
-      - '@request_stack'
-      - '@router'
       - '%env(JAEGER_CONTEXT_FORMAT)%'
       - '%env(JAEGER_CONTEXT_ENV)%'
       - '%env(JAEGER_CONTEXT_HEADER)%'
+    tags:
+      - {name: 'kernel.event_subscriber' }
+  request.span.listener:
+    class: Jaeger\Symfony\Bridge\RequestSpanListener
+    arguments:
+      - '@spl.stack'
+      - '@jaeger.tracer'
+    tags:
+      - {name: 'kernel.event_subscriber' }
+  app.start.listener:
+    class: Jaeger\Symfony\Bridge\AppStartSpanListener
+    arguments: ['@jaeger.tracer']
     tags:
       - {name: 'kernel.event_subscriber' }
   symfony.jaeger.tracer.bridge:
