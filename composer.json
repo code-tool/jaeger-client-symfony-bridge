@@ -12,7 +12,6 @@
     "symfony/console": "~2 || ~3",
     "symfony/http-kernel": "~2 || ~3",
     "symfony/dependency-injection": "~2 || ~3",
-    "symfony/routing": "~2 || ~3",
     "code-tool/jaeger-client-php": "~2"
   },
   "require-dev": {
