@@ -20,8 +20,8 @@ class TracerBridge implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::TERMINATE => [['onTerminate']],
-            KernelEvents::TERMINATE => [['onTerminate']],
+            ConsoleEvents::TERMINATE => ['onTerminate'],
+            KernelEvents::TERMINATE => ['onTerminate'],
         ];
     }
 
