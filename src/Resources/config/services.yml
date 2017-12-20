@@ -1,6 +1,6 @@
 parameters:
   env(JAEGER_HOST): localhost
-  env(JAEGER_PORT): 6831
+  env(JAEGER_PORT): 6832
   env(JAEGER_BUFFER_SIZE): 16384
   env(OPENTRACE_SAMPLER_RATE): 0.001
   env(JAEGER_CONTEXT_FORMAT): 'text'
@@ -49,7 +49,7 @@ services:
   thrift.protocol.binary:
     class: Thrift\Protocol\TBinaryProtocol
     arguments: ['@thrift.transport']
-  thrift.protocol: '@thrift.protocol.compact'
+  thrift.protocol: '@thrift.protocol.binary'
   thrift.transport.udp:
     class: Jaeger\Transport\TUDPTransport
     arguments: ['%env(JAEGER_HOST)%', '%env(JAEGER_PORT)%']
