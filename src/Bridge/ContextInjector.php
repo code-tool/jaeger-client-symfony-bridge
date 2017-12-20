@@ -49,8 +49,8 @@ class ContextInjector implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand'],
-            KernelEvents::REQUEST => ['onRequest'],
+            ConsoleEvents::COMMAND => ['onCommand', 1000],
+            KernelEvents::REQUEST => ['onRequest', 1000],
         ];
     }
 
