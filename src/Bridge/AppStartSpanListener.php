@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Tracer\TracerInterface;
@@ -19,7 +17,12 @@ class AppStartSpanListener implements EventSubscriberInterface
         $this->tracer = $tracer;
     }
 
-    public function getStartTime(Request $request): int
+    /**
+     * @param Request $request
+     *
+     * @return int
+     */
+    public function getStartTime(Request $request)
     {
         return (int)($request->server->get('REQUEST_TIME_FLOAT', microtime(true)) * 1000000);
     }

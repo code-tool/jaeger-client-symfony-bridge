@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Tracer\FlushableInterface;
@@ -20,8 +18,8 @@ class TracerBridge implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::TERMINATE => [['onTerminate']],
-            KernelEvents::TERMINATE => [['onTerminate']],
+            ConsoleEvents::TERMINATE => ['onTerminate'],
+            KernelEvents::TERMINATE => ['onTerminate'],
         ];
     }
 

@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Codec\CodecInterface;
@@ -34,9 +32,9 @@ class ContextInjector implements EventSubscriberInterface
         InjectableInterface $injectable,
         TracerInterface $tracer,
         CodecRegistry $registry,
-        string $format,
-        string $envName,
-        string $headerName
+        $format,
+        $envName,
+        $headerName
     ) {
         $this->injectable = $injectable;
         $this->tracer = $tracer;
@@ -56,7 +54,7 @@ class ContextInjector implements EventSubscriberInterface
 
     public function onCommand()
     {
-        if (($data = $_ENV[$this->envName] ?? null)
+        if (($data = $_ENV[$this->envName] ?  $_ENV[$this->envName]: null)
             && $context = $this->registry[$this->format]->decode($data)) {
             $this->injectable->assign($context);
         }
