@@ -89,11 +89,7 @@ class ContextInjector implements EventSubscriberInterface
             return $request->getRequestUri();
         }
 
-        if (null === ($route = $this->router->getRouteCollection()->get($routeName))) {
-            return $request->getRequestUri();
-        }
-
-        return $route->getPath();
+        return $routeName;
     }
 
     public function onResponse(FilterResponseEvent $event)
