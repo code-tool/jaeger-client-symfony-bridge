@@ -1,8 +1,11 @@
 <?php
 namespace Jaeger\Symfony\Bridge;
 
+use Jaeger\Symfony\Tag\SymfonyComponentTag;
+use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\DoubleTag;
 use Jaeger\Tag\LongTag;
+use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -34,7 +37,10 @@ class AppStartSpanListener implements EventSubscriberInterface
             $value = $request->server->get('REQUEST_TIME_FLOAT', microtime(true));
             $startTime = (int)($value * 1000000);
             $this->tracer->finish(
-                $this->tracer->start('app.start')
+                $this->tracer->start('symfony.start')
+                    ->addTag(new SpanKindServerTag())
+                    ->addTag(new SymfonyComponentTag())
+                    ->addTag(new SymfonyVersionTag())
                     ->addTag(new StringTag('time.source', $source))
                     ->addTag(new DoubleTag('time.value', $value))
                     ->addTag(new LongTag('time.micro', $startTime))
