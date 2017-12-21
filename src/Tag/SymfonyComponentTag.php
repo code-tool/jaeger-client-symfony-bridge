@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Tag;
 
 use Jaeger\Tag\ComponentTag;
