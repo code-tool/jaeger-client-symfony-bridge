@@ -6,8 +6,11 @@ namespace Jaeger\Symfony\Bridge;
 use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
+use Jaeger\Symfony\Tag\SymfonyComponentTag;
+use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\DoubleTag;
 use Jaeger\Tag\LongTag;
+use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -69,6 +72,9 @@ class RequestSpanListener implements EventSubscriberInterface
             [
                 new HttpMethodTag($request->getMethod()),
                 new HttpUriTag($request->getRequestUri()),
+                new SpanKindServerTag(),
+                new SymfonyComponentTag(),
+                new SymfonyVersionTag()
             ]
         );
 
@@ -82,6 +88,7 @@ class RequestSpanListener implements EventSubscriberInterface
                 ->addTag(new LongTag('time.micro', $startTime))
                 ->start($startTime);
         }
+
         $this->spans->push($requestSpan);
 
         return $this;
