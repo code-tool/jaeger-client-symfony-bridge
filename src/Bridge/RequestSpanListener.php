@@ -93,7 +93,6 @@ class RequestSpanListener implements EventSubscriberInterface
                 ->addTag(new LongTag('time.micro', $startTime))
                 ->start($startTime);
         }
-
         $this->spans->push($requestSpan);
 
         return $this;
