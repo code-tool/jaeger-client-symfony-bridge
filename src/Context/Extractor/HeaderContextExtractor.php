@@ -6,11 +6,12 @@ namespace Jaeger\Symfony\Context\Extractor;
 use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
 use Jaeger\Span\Context\SpanContext;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class HeaderContextExtractor implements ContextExtractorInterface
+class HeaderContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
 {
     /**
      * @var CodecInterface[]

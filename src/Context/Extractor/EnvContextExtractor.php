@@ -7,8 +7,9 @@ use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
 use Jaeger\Span\Context\SpanContext;
 use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class EnvContextExtractor implements ContextExtractorInterface
+class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
 {
     /**
      * @var CodecInterface[]
