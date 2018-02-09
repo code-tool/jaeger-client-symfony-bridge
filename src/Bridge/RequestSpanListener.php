@@ -42,7 +42,6 @@ class RequestSpanListener implements EventSubscriberInterface
     public function onResponse(FilterResponseEvent $event)
     {
         if ($this->spans->isEmpty()) {
-
             return $this;
         }
 
