@@ -7,6 +7,7 @@ use Jaeger\Symfony\Context\Extractor\ContextExtractorInterface;
 use Jaeger\Tracer\InjectableInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ContextInjector implements EventSubscriberInterface
@@ -26,8 +27,8 @@ class ContextInjector implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 1024],
-            KernelEvents::REQUEST => ['onRequest', 1024],
+            ConsoleEvents::COMMAND => ['onCommand', 4096],
+            KernelEvents::REQUEST => ['onRequest', 4096],
         ];
     }
 
@@ -46,8 +47,12 @@ class ContextInjector implements EventSubscriberInterface
         return $this;
     }
 
-    public function onRequest()
+    public function onRequest(GetResponseEvent $event)
     {
+        if (false === $event->isMasterRequest()) {
+            return $this;
+        }
+
         return $this->inject();
     }
 }
