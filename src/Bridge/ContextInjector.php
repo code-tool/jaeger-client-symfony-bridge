@@ -3,47 +3,24 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Bridge;
 
-use Jaeger\Codec\CodecInterface;
-use Jaeger\Codec\CodecRegistry;
+use Jaeger\Symfony\Context\Extractor\ContextExtractorInterface;
 use Jaeger\Tracer\InjectableInterface;
-use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ContextInjector implements EventSubscriberInterface
 {
     private $injectable;
 
-    private $tracer;
-
-    /**
-     * @var CodecInterface[]
-     */
-    private $registry;
-
-    private $format;
-
-    private $envName;
-
-    private $headerName;
+    private $extractor;
 
     public function __construct(
         InjectableInterface $injectable,
-        TracerInterface $tracer,
-        CodecRegistry $registry,
-        string $format,
-        string $envName,
-        string $headerName
+        ContextExtractorInterface $extractor
     ) {
         $this->injectable = $injectable;
-        $this->tracer = $tracer;
-        $this->registry = $registry;
-        $this->format = $format;
-        $this->envName = $envName;
-        $this->headerName = $headerName;
+        $this->extractor = $extractor;
     }
 
     public static function getSubscribedEvents()
@@ -54,26 +31,23 @@ class ContextInjector implements EventSubscriberInterface
         ];
     }
 
-    public function onCommand()
+    public function inject(): ContextInjector
     {
-        if (($data = $_ENV[$this->envName] ?? null)
-            && $context = $this->registry[$this->format]->decode($data)) {
-            $this->injectable->assign($context);
+        if (null === ($context = $this->extractor->extract())) {
+            return $this;
         }
-
+        $this->injectable->assign($context);
 
         return $this;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onCommand()
     {
-        $request = $event->getRequest();
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()
-            && $request->headers->has($this->headerName)
-            && ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
-            $this->injectable->assign($context);
-        }
+        return $this->inject();
+    }
 
-        return $this;
+    public function onRequest()
+    {
+        return $this->inject();
     }
 }
