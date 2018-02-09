@@ -11,6 +11,9 @@ services:
   spl.stack:
     class: SplStack
     shared: false
+  spl.priority.queue:
+    class: SplPriorityQueue
+    shared: false
   id.generator.random:
     class: Jaeger\Id\RandomIntGenerator
   id.generator.span: '@id.generator.random'
@@ -68,13 +71,33 @@ services:
     class: Jaeger\Symfony\Bridge\ContextInjector
     arguments:
       - '@jaeger.tracer'
-      - '@jaeger.tracer'
+      - '@jaeger.context.extractor'
+    tags:
+      - {name: 'kernel.event_subscriber' }
+  jaeger.context.extractor.env:
+    class: Jaeger\Symfony\Context\Extractor\EnvContextExtractor
+    arguments:
       - '@jaeger.codec.registry'
       - '%env(JAEGER_CONTEXT_FORMAT)%'
       - '%env(JAEGER_CONTEXT_ENV)%'
+    tags:
+      - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.context.extractor'}
+  jaeger.context.extractor.header:
+    class: Jaeger\Symfony\Context\Extractor\HeaderContextExtractor
+    arguments:
+      - '@jaeger.codec.registry'
+      - '%env(JAEGER_CONTEXT_FORMAT)%'
       - '%env(JAEGER_CONTEXT_HEADER)%'
     tags:
       - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.context.extractor'}
+  jaeger.context.extractor.chain:
+    class: Jaeger\Symfony\Context\Extractor\ContextExtractorChain
+    arguments:
+      - '@spl.priority.queue'
+  jaeger.context.extractor:
+    alias: '@jaeger.context.extractor.chain'
   request.span.listener:
     class: Jaeger\Symfony\Bridge\RequestSpanListener
     arguments:
