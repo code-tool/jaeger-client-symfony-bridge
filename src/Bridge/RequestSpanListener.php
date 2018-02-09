@@ -6,7 +6,6 @@ namespace Jaeger\Symfony\Bridge;
 use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
-use Jaeger\Symfony\Tag\DebugRequestTag;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Symfony\Tag\TimeMicroTag;
@@ -78,10 +77,7 @@ class RequestSpanListener implements EventSubscriberInterface
                 ->addTag(new TimeMicroTag($startTime))
                 ->start($startTime);
         }
-        if ($requestSpan->getContext()->isDebug()
-            && ($requestId = (string)$requestSpan->getItem('debug.request'))) {
-            $requestSpan->addTag(new DebugRequestTag($requestId));
-        }
+
         $this->spans->push($requestSpan);
 
         return $this;
