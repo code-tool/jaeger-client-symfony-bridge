@@ -29,7 +29,7 @@ class ContextInjector implements EventSubscriberInterface
         ];
     }
 
-    public function inject(): ContextInjector
+    public function inject()
     {
         if (null === ($context = $this->extractor->extract())) {
             return $this;

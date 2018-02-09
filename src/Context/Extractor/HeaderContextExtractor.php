@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Context\Extractor;
 
 use Jaeger\Codec\CodecInterface;
@@ -23,14 +21,24 @@ class HeaderContextExtractor implements ContextExtractorInterface
 
     private $context;
 
-    public function __construct(CodecRegistry $registry, string $format, string $headerName)
+    /**
+     * HeaderContextExtractor constructor.
+     *
+     * @param CodecRegistry $registry
+     * @param string        $format
+     * @param string        $headerName
+     */
+    public function __construct(CodecRegistry $registry, $format, $headerName)
     {
         $this->registry = $registry;
-        $this->format = $format;
-        $this->headerName = $headerName;
+        $this->format = (string)$format;
+        $this->headerName = (string)$headerName;
     }
 
-    public function extract(): ?SpanContext
+    /**
+     * @return SpanContext|null
+     */
+    public function extract()
     {
         return $this->context;
     }

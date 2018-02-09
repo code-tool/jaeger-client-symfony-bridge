@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Jaeger\Symfony\Context\Extractor;
 
@@ -21,14 +20,24 @@ class EnvContextExtractor implements ContextExtractorInterface
 
     private $context;
 
-    public function __construct(CodecRegistry $registry, string $format, string $envName)
+    /**
+     * EnvContextExtractor constructor.
+     *
+     * @param CodecRegistry $registry
+     * @param string        $format
+     * @param string        $envName
+     */
+    public function __construct(CodecRegistry $registry, $format, $envName)
     {
         $this->registry = $registry;
-        $this->format = $format;
-        $this->envName = $envName;
+        $this->format = (string)$format;
+        $this->envName = (string)$envName;
     }
 
-    public function extract(): ?SpanContext
+    /**
+     * @return SpanContext|null
+     */
+    public function extract()
     {
         return $this->context;
     }
@@ -42,7 +51,11 @@ class EnvContextExtractor implements ContextExtractorInterface
 
     public function onCommand()
     {
-        if (null === ($data = $_ENV[$this->envName] ?? null)) {
+        if (false === array_key_exists($this->envName, $_ENV)) {
+            return $this;
+        }
+
+        if (null === ($data = $_ENV[$this->envName])) {
             return $this;
         }
 

@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Resources\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -25,7 +23,7 @@ class ExtractorChainCompilerPass implements CompilerPassInterface
                         sprintf('Required tag field %s is missing from definition', 'alias')
                     );
                 }
-                $priority = $tag['priority'] ?? 0;
+                $priority = array_key_exists('priority', $tag) ? $tag['priority'] : 0;
                 $definition->addMethodCall('add', [new Reference($id), $priority]);
             }
         }
