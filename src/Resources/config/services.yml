@@ -97,7 +97,7 @@ services:
     arguments:
       - '@spl.priority.queue'
   jaeger.context.extractor:
-    alias: '@jaeger.context.extractor.chain'
+    alias: 'jaeger.context.extractor.chain'
   request.span.listener:
     class: Jaeger\Symfony\Bridge\RequestSpanListener
     arguments:
