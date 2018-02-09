@@ -29,16 +29,16 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
         $this->envName = $envName;
     }
 
-    public function extract(): ?SpanContext
-    {
-        return $this->context;
-    }
-
     public static function getSubscribedEvents()
     {
         return [
             ConsoleEvents::COMMAND => ['onCommand', 2048],
         ];
+    }
+
+    public function extract(): ?SpanContext
+    {
+        return $this->context;
     }
 
     public function onCommand()

@@ -7,5 +7,5 @@ use Jaeger\Span\Context\SpanContext;
 
 interface ContextExtractorInterface
 {
-    public function extract() : ?SpanContext;
+    public function extract(): ?SpanContext;
 }

@@ -31,16 +31,16 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         $this->headerName = $headerName;
     }
 
-    public function extract(): ?SpanContext
-    {
-        return $this->context;
-    }
-
     public static function getSubscribedEvents()
     {
         return [
             KernelEvents::REQUEST => ['onRequest', 2048],
         ];
+    }
+
+    public function extract(): ?SpanContext
+    {
+        return $this->context;
     }
 
     public function onRequest(GetResponseEvent $event)
