@@ -1,14 +1,17 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Tag;
 
 use Jaeger\Tag\StringTag;
 
 class DebugRequestTag extends StringTag
 {
-    public function __construct(string $value)
+    /**
+     * DebugRequestTag constructor.
+     *
+     * @param string $value
+     */
+    public function __construct($value)
     {
-        parent::__construct('debug.request', $value);
+        parent::__construct('debug.request', (string)$value);
     }
 }
