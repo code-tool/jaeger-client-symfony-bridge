@@ -66,7 +66,6 @@ class RequestSpanListener implements EventSubscriberInterface
                 new SymfonyVersionTag()
             ]
         );
-
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
             $source = $request->server->has('REQUEST_TIME_FLOAT') ? 'header' : 'microtime';
             $value = $request->server->get('REQUEST_TIME_FLOAT', microtime(true));
