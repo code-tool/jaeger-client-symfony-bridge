@@ -46,7 +46,7 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 2048],
+            ConsoleEvents::COMMAND => ['onCommand', 8192],
         ];
     }
 

@@ -47,7 +47,7 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 2048],
+            KernelEvents::REQUEST => ['onRequest', 8192],
         ];
     }
 
