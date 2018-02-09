@@ -41,21 +41,6 @@ class RequestSpanListener implements EventSubscriberInterface
         ];
     }
 
-    public function getOperationName(Request $request)
-    {
-        if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
-            return ($controller = $request->attributes->get('_controller', null))
-                ? sprintf('fragment.%s', $controller)
-                : 'fragment';
-        }
-
-        if (null === ($routeName = $request->attributes->get('_route', null))) {
-            return $request->getRequestUri();
-        }
-
-        return $routeName;
-    }
-
     public function onResponse(FilterResponseEvent $event)
     {
         if ($this->spans->isEmpty()) {
@@ -101,5 +86,20 @@ class RequestSpanListener implements EventSubscriberInterface
         $this->spans->push($requestSpan);
 
         return $this;
+    }
+
+    public function getOperationName(Request $request)
+    {
+        if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
+            return ($controller = $request->attributes->get('_controller', null))
+                ? sprintf('fragment.%s', $controller)
+                : 'fragment';
+        }
+
+        if (null === ($routeName = $request->attributes->get('_route', null))) {
+            return $request->getRequestUri();
+        }
+
+        return $routeName;
     }
 }

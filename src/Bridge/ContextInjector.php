@@ -31,6 +31,11 @@ class ContextInjector implements EventSubscriberInterface
         ];
     }
 
+    public function onCommand()
+    {
+        return $this->inject();
+    }
+
     public function inject(): ContextInjector
     {
         if (null === ($context = $this->extractor->extract())) {
@@ -39,11 +44,6 @@ class ContextInjector implements EventSubscriberInterface
         $this->injectable->assign($context);
 
         return $this;
-    }
-
-    public function onCommand()
-    {
-        return $this->inject();
     }
 
     public function onRequest()
