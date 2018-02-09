@@ -4,12 +4,13 @@ namespace Jaeger\Symfony\Bridge;
 use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
+use Jaeger\Symfony\Tag\DebugRequestTag;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
-use Jaeger\Tag\DoubleTag;
-use Jaeger\Tag\LongTag;
+use Jaeger\Symfony\Tag\TimeMicroTag;
+use Jaeger\Symfony\Tag\TimeSourceTag;
+use Jaeger\Symfony\Tag\TimeValueTag;
 use Jaeger\Tag\SpanKindServerTag;
-use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -86,10 +87,14 @@ class RequestSpanListener implements EventSubscriberInterface
             $value = $request->server->get('REQUEST_TIME_FLOAT', microtime(true));
             $startTime = (int)($value * 1000000);
             $requestSpan
-                ->addTag(new StringTag('time.source', $source))
-                ->addTag(new DoubleTag('time.value', $value))
-                ->addTag(new LongTag('time.micro', $startTime))
+                ->addTag(new TimeSourceTag($source))
+                ->addTag(new TimeValueTag($value))
+                ->addTag(new TimeMicroTag($startTime))
                 ->start($startTime);
+        }
+        if ($requestSpan->getContext()->isDebug()
+            && ($requestId = (string)$requestSpan->getItem('debug.request'))) {
+            $requestSpan->addTag(new DebugRequestTag($requestId));
         }
         $this->spans->push($requestSpan);
 
