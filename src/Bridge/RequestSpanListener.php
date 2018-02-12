@@ -54,6 +54,7 @@ class RequestSpanListener implements EventSubscriberInterface
             return $this;
         }
 
+        $this->tracer->finish($this->spans->pop());
         $this->tracer->finish(
             $this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode()))
         );
@@ -76,16 +77,18 @@ class RequestSpanListener implements EventSubscriberInterface
         }
 
         $request = $event->getRequest();
-        $this->tracer->start(
-            $this->nameGenerator->generate() . ':background',
-            [
-                new HttpMethodTag($request->getMethod()),
-                new HttpUriTag($request->getRequestUri()),
-                new SpanKindServerTag(),
-                new SymfonyComponentTag(),
-                new SymfonyVersionTag(),
-                new SymfonyBackgroundTag(),
-            ]
+        $this->spans->push(
+            $this->tracer->start(
+                'background',
+                [
+                    new HttpMethodTag($request->getMethod()),
+                    new HttpUriTag($request->getRequestUri()),
+                    new SpanKindServerTag(),
+                    new SymfonyComponentTag(),
+                    new SymfonyVersionTag(),
+                    new SymfonyBackgroundTag(),
+                ]
+            )
         );
 
         return $this;
