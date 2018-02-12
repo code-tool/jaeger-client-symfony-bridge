@@ -17,8 +17,8 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 8],
-            ConsoleEvents::COMMAND => ['onCommand', 8],
+            KernelEvents::REQUEST => ['onRequest', 30],
+            ConsoleEvents::COMMAND => ['onCommand', 30],
             KernelEvents::TERMINATE => ['onTerminate'],
             ConsoleEvents::TERMINATE => ['onTerminate'],
         ];
