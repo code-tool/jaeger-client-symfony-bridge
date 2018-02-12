@@ -20,7 +20,7 @@ class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInter
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 8192],
+            ConsoleEvents::COMMAND => ['onCommand', 16384],
             ConsoleEvents::TERMINATE => ['onTerminate'],
         ];
     }
