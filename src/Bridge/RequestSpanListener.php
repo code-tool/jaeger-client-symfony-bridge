@@ -4,6 +4,7 @@ namespace Jaeger\Symfony\Bridge;
 use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
+use Jaeger\Symfony\Name\Generator\NameGeneratorInterface;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Symfony\Tag\TimeMicroTag;
@@ -12,7 +13,6 @@ use Jaeger\Symfony\Tag\TimeValueTag;
 use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -22,11 +22,14 @@ class RequestSpanListener implements EventSubscriberInterface
 {
     private $spans;
 
+    private $nameGenerator;
+
     private $tracer;
 
-    public function __construct(\SplStack $stack, TracerInterface $tracer)
+    public function __construct(\SplStack $stack, NameGeneratorInterface $nameGenerator, TracerInterface $tracer)
     {
         $this->spans = $stack;
+        $this->nameGenerator = $nameGenerator;
         $this->tracer = $tracer;
     }
 
@@ -55,7 +58,7 @@ class RequestSpanListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $requestSpan = $this->tracer->start(
-            $this->getOperationName($request),
+            $this->nameGenerator->generate(),
             [
                 new HttpMethodTag($request->getMethod()),
                 new HttpUriTag($request->getRequestUri()),
@@ -78,20 +81,5 @@ class RequestSpanListener implements EventSubscriberInterface
         $this->spans->push($requestSpan);
 
         return $this;
-    }
-
-    public function getOperationName(Request $request)
-    {
-        if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
-            return ($controller = $request->attributes->get('_controller', null))
-                ? sprintf('fragment.%s', $controller)
-                : 'fragment';
-        }
-
-        if (null === ($routeName = $request->attributes->get('_route', null))) {
-            return $request->getRequestUri();
-        }
-
-        return $routeName;
     }
 }
