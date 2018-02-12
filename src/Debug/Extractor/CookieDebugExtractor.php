@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Debug\Extractor;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -14,9 +12,14 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
 
     private $cookieName;
 
-    public function __construct(string $cookieName)
+    /**
+     * CookieDebugExtractor constructor.
+     *
+     * @param string $cookieName
+     */
+    public function __construct($cookieName)
     {
-        $this->cookieName = $cookieName;
+        $this->cookieName = (string)$cookieName;
     }
 
     public function onRequest(GetResponseEvent $event)
@@ -42,9 +45,12 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
         return $this;
     }
 
-    public function getDebug(): string
+    /**
+     * @return string
+     */
+    public function getDebug()
     {
-        return $this->debugId;
+        return (string)$this->debugId;
     }
 
     public static function getSubscribedEvents()
