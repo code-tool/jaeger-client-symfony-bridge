@@ -56,7 +56,7 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 8192],
+            KernelEvents::REQUEST => ['onRequest', 16384],
             KernelEvents::TERMINATE => ['onTerminate'],
         ];
     }

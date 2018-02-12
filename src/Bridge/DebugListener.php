@@ -28,8 +28,8 @@ class DebugListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::COMMAND => ['onStart', 16384],
-            KernelEvents::REQUEST => ['onStart', 16384],
+            ConsoleEvents::COMMAND => ['onStart', 8192],
+            KernelEvents::REQUEST => ['onStart', 8192],
             ConsoleEvents::TERMINATE => ['onTerminate'],
             KernelEvents::TERMINATE => ['onTerminate'],
         ];
