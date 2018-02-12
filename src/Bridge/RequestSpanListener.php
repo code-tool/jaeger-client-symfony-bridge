@@ -5,6 +5,7 @@ use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
 use Jaeger\Symfony\Name\Generator\NameGeneratorInterface;
+use Jaeger\Symfony\Tag\SymfonyBackgroundTag;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Symfony\Tag\TimeMicroTag;
@@ -15,6 +16,7 @@ use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -37,8 +39,26 @@ class RequestSpanListener implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => ['onRequest', 29],
-            KernelEvents::RESPONSE => ['onResponse'],
+            KernelEvents::RESPONSE => ['onResponse', -1024],
+            KernelEvents::TERMINATE => ['onTerminate', -1024],
         ];
+    }
+
+    public function onTerminate(PostResponseEvent $event)
+    {
+        if ($this->spans->isEmpty()) {
+            return $this;
+        }
+
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+            return $this;
+        }
+
+        $this->tracer->finish(
+            $this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode()))
+        );
+
+        return $this;
     }
 
     public function onResponse(FilterResponseEvent $event)
@@ -47,8 +67,25 @@ class RequestSpanListener implements EventSubscriberInterface
             return $this;
         }
 
-        $this->tracer->finish(
-            $this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode()))
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+            $this->tracer->finish(
+                $this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode()))
+            );
+
+            return $this;
+        }
+
+        $request = $event->getRequest();
+        $this->tracer->start(
+            $this->nameGenerator->generate() . ':background',
+            [
+                new HttpMethodTag($request->getMethod()),
+                new HttpUriTag($request->getRequestUri()),
+                new SpanKindServerTag(),
+                new SymfonyComponentTag(),
+                new SymfonyVersionTag(),
+                new SymfonyBackgroundTag(),
+            ]
         );
 
         return $this;
