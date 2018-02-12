@@ -35,12 +35,20 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
     {
         return [
             KernelEvents::REQUEST => ['onRequest', 8192],
+            KernelEvents::TERMINATE => ['onTerminate'],
         ];
     }
 
     public function extract(): ?SpanContext
     {
         return $this->context;
+    }
+
+    public function onTerminate()
+    {
+        $this->context = null;
+
+        return $this;
     }
 
     public function onRequest(GetResponseEvent $event)

@@ -33,7 +33,15 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
     {
         return [
             ConsoleEvents::COMMAND => ['onCommand', 8192],
+            ConsoleEvents::TERMINATE => ['onTerminate'],
         ];
+    }
+
+    public function onTerminate()
+    {
+        $this->context = null;
+
+        return $this;
     }
 
     public function extract(): ?SpanContext

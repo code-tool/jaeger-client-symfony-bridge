@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ContextInjector implements EventSubscriberInterface
+class ContextListener implements EventSubscriberInterface
 {
     private $injectable;
 
@@ -27,8 +27,8 @@ class ContextInjector implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 4096],
-            KernelEvents::REQUEST => ['onRequest', 4096],
+            ConsoleEvents::COMMAND => ['onCommand', 8192],
+            KernelEvents::REQUEST => ['onRequest', 8192],
         ];
     }
 
@@ -37,7 +37,7 @@ class ContextInjector implements EventSubscriberInterface
         return $this->inject();
     }
 
-    public function inject(): ContextInjector
+    public function inject(): ContextListener
     {
         if (null === ($context = $this->extractor->extract())) {
             return $this;
