@@ -43,13 +43,28 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
         return $this->context;
     }
 
+
     public static function getSubscribedEvents()
     {
         return [
             ConsoleEvents::COMMAND => ['onCommand', 8192],
+            ConsoleEvents::TERMINATE => ['onTerminate'],
         ];
     }
 
+    /**
+     * @return EnvContextExtractor
+     */
+    public function onTerminate()
+    {
+        $this->context = null;
+
+        return $this;
+    }
+
+    /**
+     * @return EnvContextExtractor
+     */
     public function onCommand()
     {
         if (false === array_key_exists($this->envName, $_ENV)) {

@@ -48,9 +48,25 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
     {
         return [
             KernelEvents::REQUEST => ['onRequest', 8192],
+            KernelEvents::TERMINATE => ['onTerminate'],
         ];
     }
 
+    /**
+     * @return HeaderContextExtractor
+     */
+    public function onTerminate()
+    {
+        $this->context = null;
+
+        return $this;
+    }
+
+    /**
+     * @param GetResponseEvent $event
+     *
+     * @return HeaderContextExtractor
+     */
     public function onRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
