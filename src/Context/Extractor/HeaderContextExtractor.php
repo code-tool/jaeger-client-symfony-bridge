@@ -6,7 +6,7 @@ use Jaeger\Codec\CodecRegistry;
 use Jaeger\Span\Context\SpanContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class HeaderContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
@@ -55,8 +55,11 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
     /**
      * @return HeaderContextExtractor
      */
-    public function onTerminate()
+    public function onTerminate(PostResponseEvent $event)
     {
+        if (false === $event->isMasterRequest()) {
+            return $this;
+        }
         $this->context = null;
 
         return $this;
@@ -69,15 +72,11 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
      */
     public function onRequest(GetResponseEvent $event)
     {
-        $request = $event->getRequest();
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
-            $this->context = null;
-
+        if (false === $event->isMasterRequest()) {
             return $this;
         }
-
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()
-            && $request->headers->has($this->headerName)
+        $request = $event->getRequest();
+        if ($request->headers->has($this->headerName)
             && ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
             $this->context = $context;
 

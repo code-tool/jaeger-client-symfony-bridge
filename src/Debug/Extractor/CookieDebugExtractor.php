@@ -3,7 +3,7 @@ namespace Jaeger\Symfony\Debug\Extractor;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberInterface
@@ -24,7 +24,7 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
 
     public function onRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (false === $event->isMasterRequest()) {
             return $this;
         }
 
@@ -38,8 +38,11 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
         return $this;
     }
 
-    public function onTerminate()
+    public function onTerminate(PostResponseEvent $event)
     {
+        if (false === $event->isMasterRequest()) {
+            return $this;
+        }
         $this->debugId = '';
 
         return $this;
