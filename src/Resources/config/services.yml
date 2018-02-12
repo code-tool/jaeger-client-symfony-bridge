@@ -113,6 +113,17 @@ services:
       - '@spl.priority.queue'
   jaeger.debug.extractor:
     alias: 'jaeger.debug.extractor.chain'
+  jaeger.name.generator.default:
+    class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
+    tags:
+      - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.name.generator', priority: -1}
+  jaeger.name.generator.chain:
+    class: Jaeger\Symfony\Name\Generator\NameGeneratorChain
+    arguments:
+      - '@spl.priority.queue'
+  jaeger.name.generator:
+    alias: 'jaeger.name.generator.chain'
   jaeger.debug.listener:
     class: Jaeger\Symfony\Bridge\DebugListener
     arguments:
@@ -131,6 +142,7 @@ services:
     class: Jaeger\Symfony\Bridge\RequestSpanListener
     arguments:
       - '@spl.stack'
+      - '@jaeger.name.generator'
       - '@jaeger.tracer'
     tags:
       - {name: 'kernel.event_subscriber' }
