@@ -66,9 +66,16 @@ services:
         method: open
         arguments: []
   thrift.transport: '@thrift.transport.udp'
+  jaeger.tracer.abstract:
+      class: Jaeger\Tracer\Tracer
+      abstract: true
+      arguments:
+        - '@spl.stack'
+        - '@jaeger.span.factory'
+        - '@client.thrift'
   jaeger.tracer:
     class: Jaeger\Tracer\Tracer
-    arguments: ['@spl.stack', '@jaeger.span.factory', '@client.thrift']
+    parent: jaeger.tracer.abstract
   jaeger.context.extractor.env:
     class: Jaeger\Symfony\Context\Extractor\EnvContextExtractor
     arguments:
