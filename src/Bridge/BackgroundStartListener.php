@@ -18,7 +18,7 @@ class BackgroundStartListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return [KernelEvents::TERMINATE => ['onTerminate', 4096],];
+        return [KernelEvents::TERMINATE => ['onTerminate', 16384],];
     }
 
     public function onTerminate(PostResponseEvent $event)

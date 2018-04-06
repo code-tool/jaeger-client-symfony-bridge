@@ -33,7 +33,7 @@ class GlobalSpanListener implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => ['onRequest', 30],
-            KernelEvents::TERMINATE => ['onTerminate', -16384],
+            KernelEvents::TERMINATE => ['onTerminate', 4096],
         ];
     }
 
