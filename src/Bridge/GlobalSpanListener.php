@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
+
 namespace Jaeger\Symfony\Bridge;
 
-use Jaeger\Http\HttpCodeTag;
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
 use Jaeger\Symfony\Name\Generator\NameGeneratorInterface;
@@ -10,22 +11,20 @@ use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class RequestSpanListener implements EventSubscriberInterface
+class GlobalSpanListener implements EventSubscriberInterface
 {
-    private $spans;
+    private $span;
 
     private $nameGenerator;
 
     private $tracer;
 
-    public function __construct(\SplStack $stack, NameGeneratorInterface $nameGenerator, TracerInterface $tracer)
+    public function __construct(NameGeneratorInterface $nameGenerator, TracerInterface $tracer)
     {
-        $this->spans = $stack;
         $this->nameGenerator = $nameGenerator;
         $this->tracer = $tracer;
     }
@@ -33,23 +32,27 @@ class RequestSpanListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 29],
-            KernelEvents::RESPONSE => ['onResponse', -1024],
+            KernelEvents::REQUEST => ['onRequest', 30],
+            KernelEvents::TERMINATE => ['onTerminate', -16384],
         ];
     }
 
-    public function onResponse(FilterResponseEvent $event)
+    public function onTerminate()
     {
-        if ($this->spans->isEmpty()) {
+        if (null === $this->span) {
             return $this;
         }
-        $this->tracer->finish($this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode())));
+        $this->tracer->finish($this->span);
 
         return $this;
     }
 
     public function onRequest(GetResponseEvent $event)
     {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+            return $this;
+        }
+
         $request = $event->getRequest();
         $requestSpan = $this->tracer->start(
             $this->nameGenerator->generate(),
@@ -61,11 +64,7 @@ class RequestSpanListener implements EventSubscriberInterface
                 new SymfonyVersionTag()
             ]
         );
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            $requestSpan->start((int)1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
-        }
-
-        $this->spans->push($requestSpan);
+        $this->span = $requestSpan->start((int)1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
 
         return $this;
     }
