@@ -42,6 +42,10 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onResponse(FilterResponseEvent $event)
     {
+        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+            return $this;
+        }
+
         if ($this->spans->isEmpty()) {
             return $this;
         }
@@ -52,22 +56,23 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onRequest(GetResponseEvent $event)
     {
-        $request = $event->getRequest();
-        $requestSpan = $this->tracer->start(
-            $this->nameGenerator->generate(),
-            [
-                new HttpMethodTag($request->getMethod()),
-                new HttpUriTag($request->getRequestUri()),
-                new SpanKindServerTag(),
-                new SymfonyComponentTag(),
-                new SymfonyVersionTag()
-            ]
-        );
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            $requestSpan->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))));
+            return $this;
         }
 
-        $this->spans->push($requestSpan);
+        $request = $event->getRequest();
+        $this->spans->push(
+            $this->tracer->start(
+                $this->nameGenerator->generate(),
+                [
+                    new HttpMethodTag($request->getMethod()),
+                    new HttpUriTag($request->getRequestUri()),
+                    new SpanKindServerTag(),
+                    new SymfonyComponentTag(),
+                    new SymfonyVersionTag()
+                ]
+            )
+        );
 
         return $this;
     }
