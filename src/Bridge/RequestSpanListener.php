@@ -64,7 +64,7 @@ class RequestSpanListener implements EventSubscriberInterface
             ]
         );
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            $requestSpan->start((int)1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
+            $requestSpan->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))));
         }
 
         $this->spans->push($requestSpan);

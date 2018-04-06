@@ -64,7 +64,9 @@ class GlobalSpanListener implements EventSubscriberInterface
                 new SymfonyVersionTag()
             ]
         );
-        $this->span = $requestSpan->start((int)1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
+        $this->span = $requestSpan->start(
+            (int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)))
+        );
 
         return $this;
     }
