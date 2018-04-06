@@ -52,7 +52,7 @@ class GlobalSpanListener implements EventSubscriberInterface
         }
 
         $request = $event->getRequest();
-        $requestSpan = $this->tracer->start(
+        $this->span = $this->tracer->start(
             $this->nameGenerator->generate(),
             [
                 new HttpMethodTag($request->getMethod()),
@@ -61,10 +61,7 @@ class GlobalSpanListener implements EventSubscriberInterface
                 new SymfonyComponentTag(),
                 new SymfonyVersionTag()
             ]
-        );
-        $this->span = $requestSpan->start(
-            (int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)))
-        );
+        )->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))));
 
         return $this;
     }
