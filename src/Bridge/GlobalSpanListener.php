@@ -31,7 +31,7 @@ class GlobalSpanListener implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => ['onRequest', 30],
-            KernelEvents::TERMINATE => ['onTerminate', -16384],
+            KernelEvents::TERMINATE => ['onTerminate', 4096],
         ];
     }
 
@@ -62,7 +62,9 @@ class GlobalSpanListener implements EventSubscriberInterface
                 new SymfonyVersionTag()
             ]
         );
-        $this->span = $requestSpan->start((int)1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
+        $this->span = $requestSpan->start(
+            (int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)))
+        );
 
         return $this;
     }
