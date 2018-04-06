@@ -40,6 +40,11 @@ class BackgroundSpanHandler
 
     public function finish()
     {
+        if (null === $this->span) {
+            return $this;
+        }
+        $this->tracer->finish($this->span);
 
+        return $this;
     }
 }
