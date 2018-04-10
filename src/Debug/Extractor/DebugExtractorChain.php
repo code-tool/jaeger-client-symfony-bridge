@@ -1,25 +1,37 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Debug\Extractor;
 
 class DebugExtractorChain implements DebugExtractorInterface
 {
     private $queue;
 
+    /**
+     * DebugExtractorChain constructor.
+     *
+     * @param \SplPriorityQueue $queue
+     */
     public function __construct(\SplPriorityQueue $queue)
     {
         $this->queue = $queue;
     }
 
-    public function add(DebugExtractorInterface $extractor, int $priority = 0): DebugExtractorChain
+    /**
+     * @param DebugExtractorInterface $extractor
+     * @param int                     $priority
+     *
+     * @return DebugExtractorChain
+     */
+    public function add(DebugExtractorInterface $extractor, $priority = 0)
     {
-        $this->queue->insert($extractor, $priority);
+        $this->queue->insert($extractor, (int)$priority);
 
         return $this;
     }
 
-    public function getDebug(): string
+    /**
+     * @return string
+     */
+    public function getDebug()
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {

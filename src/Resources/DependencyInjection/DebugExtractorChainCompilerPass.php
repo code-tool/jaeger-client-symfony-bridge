@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Jaeger\Symfony\Resources\DependencyInjection;
 
@@ -20,7 +19,7 @@ class DebugExtractorChainCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('jaeger.debug.extractor.chain');
         foreach ($container->findTaggedServiceIds('jaeger.debug.extractor') as $id => $tags) {
             foreach ($tags as $tag) {
-                $priority = $tag['priority'] ?? 0;
+                $priority = array_key_exists('priority', $tag) ? $tag['priority'] : 0;
                 $definition->addMethodCall('add', [new Reference($id), $priority]);
             }
         }

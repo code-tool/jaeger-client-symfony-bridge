@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Name\Generator;
 
 use Symfony\Component\Console\ConsoleEvents;
@@ -24,6 +22,11 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         ];
     }
 
+    /**
+     * @param ConsoleCommandEvent $event
+     *
+     * @return DefaultNameGenerator
+     */
     public function onCommand(ConsoleCommandEvent $event)
     {
         $this->name = $event->getCommand()->getName();
@@ -31,6 +34,11 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         return $this;
     }
 
+    /**
+     * @param GetResponseEvent $event
+     *
+     * @return DefaultNameGenerator
+     */
     public function onRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
@@ -53,6 +61,9 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         return $this;
     }
 
+    /**
+     * @return DefaultNameGenerator
+     */
     public function onTerminate()
     {
         $this->name = '';
@@ -60,7 +71,10 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         return $this;
     }
 
-    public function generate(): string
+    /**
+     * @return string
+     */
+    public function generate()
     {
         return $this->name;
     }

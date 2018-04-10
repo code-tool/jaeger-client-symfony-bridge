@@ -1,14 +1,17 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Tag;
 
 use Jaeger\Tag\DoubleTag;
 
 class TimeValueTag extends DoubleTag
 {
-    public function __construct(float $value)
+    /**
+     * TimeValueTag constructor.
+     *
+     * @param float $value
+     */
+    public function __construct($value)
     {
-        parent::__construct('time.value', $value);
+        parent::__construct('time.value', (float)$value);
     }
 }

@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Context\Extractor;
 
 use Jaeger\Codec\CodecInterface;
@@ -24,11 +22,26 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
 
     private $context;
 
-    public function __construct(CodecRegistry $registry, string $format, string $headerName)
+    /**
+     * HeaderContextExtractor constructor.
+     *
+     * @param CodecRegistry $registry
+     * @param string        $format
+     * @param string        $headerName
+     */
+    public function __construct(CodecRegistry $registry, $format, $headerName)
     {
         $this->registry = $registry;
-        $this->format = $format;
-        $this->headerName = $headerName;
+        $this->format = (string)$format;
+        $this->headerName = (string)$headerName;
+    }
+
+    /**
+     * @return SpanContext|null
+     */
+    public function extract()
+    {
+        return $this->context;
     }
 
     public static function getSubscribedEvents()
@@ -39,11 +52,9 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         ];
     }
 
-    public function extract(): ?SpanContext
-    {
-        return $this->context;
-    }
-
+    /**
+     * @return HeaderContextExtractor
+     */
     public function onTerminate(PostResponseEvent $event)
     {
         if (false === $event->isMasterRequest()) {
@@ -54,6 +65,11 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         return $this;
     }
 
+    /**
+     * @param GetResponseEvent $event
+     *
+     * @return HeaderContextExtractor
+     */
     public function onRequest(GetResponseEvent $event)
     {
         if (false === $event->isMasterRequest()) {

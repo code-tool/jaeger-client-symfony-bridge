@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Symfony\Debug\Extractor\DebugExtractorInterface;
@@ -38,6 +36,9 @@ class DebugListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @return DebugListener
+     */
     public function onTerminate()
     {
         $this->debuggable->disable();
@@ -45,6 +46,9 @@ class DebugListener implements EventSubscriberInterface
         return $this;
     }
 
+    /**
+     * @return DebugListener
+     */
     public function onCommand()
     {
         if ('' === ($debugId = $this->extractor->getDebug())) {
@@ -55,6 +59,11 @@ class DebugListener implements EventSubscriberInterface
         return $this;
     }
 
+    /**
+     * @param GetResponseEvent $event
+     *
+     * @return DebugListener
+     */
     public function onRequest(GetResponseEvent $event)
     {
         if (false === $event->isMasterRequest()) {

@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Resources\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -20,7 +18,7 @@ class ContextExtractorChainCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('jaeger.context.extractor.chain');
         foreach ($container->findTaggedServiceIds('jaeger.context.extractor') as $id => $tags) {
             foreach ($tags as $tag) {
-                $priority = $tag['priority'] ?? 0;
+                $priority = array_key_exists('priority', $tag) ? $tag['priority'] : 0;
                 $definition->addMethodCall('add', [new Reference($id), $priority]);
             }
         }

@@ -1,14 +1,17 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Tag;
 
 use Jaeger\Tag\StringTag;
 
 class TimeSourceTag extends StringTag
 {
-    public function __construct(string $value)
+    /**
+     * TimeSourceTag constructor.
+     *
+     * @param string $value
+     */
+    public function __construct($value)
     {
-        parent::__construct('time.source', $value);
+        parent::__construct('time.source', (string)$value);
     }
 }

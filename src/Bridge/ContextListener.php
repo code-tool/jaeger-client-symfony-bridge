@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Symfony\Context\Extractor\ContextExtractorInterface;
@@ -32,12 +30,18 @@ class ContextListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @return ContextListener
+     */
     public function onCommand()
     {
         return $this->inject();
     }
 
-    public function inject(): ContextListener
+    /**
+     * @return ContextListener
+     */
+    public function inject()
     {
         if (null === ($context = $this->extractor->extract())) {
             return $this;
@@ -47,6 +51,11 @@ class ContextListener implements EventSubscriberInterface
         return $this;
     }
 
+    /**
+     * @param GetResponseEvent $event
+     *
+     * @return ContextListener
+     */
     public function onRequest(GetResponseEvent $event)
     {
         if (false === $event->isMasterRequest()) {

@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Jaeger\Symfony\Debug\Extractor;
 
@@ -12,7 +11,12 @@ class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInter
 
     private $debugId = '';
 
-    public function __construct(string $envName)
+    /**
+     * EnvDebugExtractor constructor.
+     *
+     * @param string $envName
+     */
+    public function __construct($envName)
     {
         $this->envName = $envName;
     }
@@ -32,14 +36,17 @@ class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInter
         return $this;
     }
 
-    public function getDebug(): string
+    /**
+     * @return string
+     */
+    public function getDebug()
     {
-        return $this->debugId;
+        return (string)$this->debugId;
     }
 
     public function onCommand()
     {
-        if (null === ($data = $_ENV[$this->envName] ?? null)) {
+        if (false === array_key_exists($this->envName, $_ENV)) {
             return $this;
         }
         $this->debugId = (string)$_ENV[$this->envName];

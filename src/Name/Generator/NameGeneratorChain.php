@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Name\Generator;
 
 class NameGeneratorChain implements NameGeneratorInterface
@@ -12,14 +10,23 @@ class NameGeneratorChain implements NameGeneratorInterface
         $this->queue = $queue;
     }
 
-    public function add(NameGeneratorInterface $extractor, int $priority = 0): NameGeneratorChain
+    /**
+     * @param NameGeneratorInterface $extractor
+     * @param int                    $priority
+     *
+     * @return NameGeneratorChain
+     */
+    public function add(NameGeneratorInterface $extractor, $priority = 0)
     {
-        $this->queue->insert($extractor, $priority);
+        $this->queue->insert($extractor, (int)$priority);
 
         return $this;
     }
 
-    public function generate(): string
+    /**
+     * @return string
+     */
+    public function generate()
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {

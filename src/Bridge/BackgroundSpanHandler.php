@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Http\HttpMethodTag;
@@ -27,7 +25,12 @@ class BackgroundSpanHandler
         $this->tracer = $tracer;
     }
 
-    public function start(Request $request): BackgroundSpanHandler
+    /**
+     * @param Request $request
+     *
+     * @return BackgroundSpanHandler
+     */
+    public function start(Request $request)
     {
         $this->span = $this->tracer->start(
             'background',
@@ -44,7 +47,10 @@ class BackgroundSpanHandler
         return $this;
     }
 
-    public function flush(): BackgroundSpanHandler
+    /**
+     * @return BackgroundSpanHandler
+     */
+    public function flush()
     {
         if (null === $this->span) {
             return $this;

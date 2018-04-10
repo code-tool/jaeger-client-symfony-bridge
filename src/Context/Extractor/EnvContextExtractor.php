@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Jaeger\Symfony\Context\Extractor;
 
@@ -22,12 +21,28 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
 
     private $context;
 
-    public function __construct(CodecRegistry $registry, string $format, string $envName)
+    /**
+     * EnvContextExtractor constructor.
+     *
+     * @param CodecRegistry $registry
+     * @param string        $format
+     * @param string        $envName
+     */
+    public function __construct(CodecRegistry $registry, $format, $envName)
     {
         $this->registry = $registry;
-        $this->format = $format;
-        $this->envName = $envName;
+        $this->format = (string)$format;
+        $this->envName = (string)$envName;
     }
+
+    /**
+     * @return SpanContext|null
+     */
+    public function extract()
+    {
+        return $this->context;
+    }
+
 
     public static function getSubscribedEvents()
     {
@@ -37,6 +52,9 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
         ];
     }
 
+    /**
+     * @return EnvContextExtractor
+     */
     public function onTerminate()
     {
         $this->context = null;
@@ -44,14 +62,16 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
         return $this;
     }
 
-    public function extract(): ?SpanContext
-    {
-        return $this->context;
-    }
-
+    /**
+     * @return EnvContextExtractor
+     */
     public function onCommand()
     {
-        if (null === ($data = $_ENV[$this->envName] ?? null)) {
+        if (false === array_key_exists($this->envName, $_ENV)) {
+            return $this;
+        }
+
+        if (null === ($data = $_ENV[$this->envName])) {
             return $this;
         }
 

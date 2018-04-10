@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Context\Extractor;
 
 use Jaeger\Span\Context\SpanContext;
@@ -14,14 +12,23 @@ class ContextExtractorChain implements ContextExtractorInterface
         $this->queue = $queue;
     }
 
-    public function add(ContextExtractorInterface $extractor, int $priority = 0): ContextExtractorChain
+    /**
+     * @param ContextExtractorInterface $extractor
+     * @param int                       $priority
+     *
+     * @return ContextExtractorChain
+     */
+    public function add(ContextExtractorInterface $extractor, $priority = 0)
     {
-        $this->queue->insert($extractor, $priority);
+        $this->queue->insert($extractor, (int)$priority);
 
         return $this;
     }
 
-    public function extract(): ?SpanContext
+    /**
+     * @return SpanContext|null
+     */
+    public function extract()
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {
