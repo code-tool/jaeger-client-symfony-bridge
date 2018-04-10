@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Http\HttpMethodTag;
@@ -32,7 +30,12 @@ class GlobalSpanHandler
         $this->nameGenerator = $nameGenerator;
     }
 
-    public function start(Request $request): GlobalSpanHandler
+    /**
+     * @param Request $request
+     *
+     * @return GlobalSpanHandler
+     */
+    public function start(Request $request)
     {
         $this->span = $this->tracer->start(
             $this->nameGenerator->generate(),
@@ -48,7 +51,10 @@ class GlobalSpanHandler
         return $this;
     }
 
-    public function finish(): GlobalSpanHandler
+    /**
+     * @return GlobalSpanHandler
+     */
+    public function finish()
     {
         if (null === $this->span) {
             return $this;
@@ -58,7 +64,10 @@ class GlobalSpanHandler
         return $this;
     }
 
-    public function flush(): GlobalSpanHandler
+    /**
+     * @return GlobalSpanHandler
+     */
+    public function flush()
     {
         if (null === $this->span || null === $this->durationUsec) {
             return $this;
