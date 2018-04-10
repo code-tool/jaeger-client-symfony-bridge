@@ -5,6 +5,7 @@ namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Http\HttpMethodTag;
 use Jaeger\Http\HttpUriTag;
+use Jaeger\Span\Span;
 use Jaeger\Symfony\Tag\SymfonyBackgroundTag;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
@@ -14,6 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BackgroundSpanHandler
 {
+    /**
+     * @var Span
+     */
     private $span;
 
     private $tracer;
@@ -23,7 +27,7 @@ class BackgroundSpanHandler
         $this->tracer = $tracer;
     }
 
-    public function start(Request $request)
+    public function start(Request $request): BackgroundSpanHandler
     {
         $this->span = $this->tracer->start(
             'background',
@@ -36,9 +40,11 @@ class BackgroundSpanHandler
                 new SymfonyBackgroundTag(),
             ]
         );
+
+        return $this;
     }
 
-    public function finish()
+    public function flush(): BackgroundSpanHandler
     {
         if (null === $this->span) {
             return $this;

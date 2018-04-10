@@ -131,6 +131,12 @@ services:
       - '@spl.priority.queue'
   jaeger.name.generator:
     alias: 'jaeger.name.generator.chain'
+  jaeger.span.handler.background:
+    class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
+    arguments: ['@jaeger.tracer']
+  jaeger.span.handler.gloabal:
+    class: Jaeger\Symfony\Bridge\GlobalSpanHandler
+    arguments: ['@jaeger.tracer', '@jaeger.name.generator']
   jaeger.debug.listener:
     class: Jaeger\Symfony\Bridge\DebugListener
     arguments:
@@ -155,9 +161,7 @@ services:
       - {name: 'kernel.event_subscriber' }
   jaeger.global.span.listener:
     class: Jaeger\Symfony\Bridge\GlobalSpanListener
-    arguments:
-      - '@jaeger.name.generator'
-      - '@jaeger.tracer'
+    arguments: ['@jaeger.span.handler.gloabal']
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.app.start.listener:
@@ -170,16 +174,13 @@ services:
     arguments: ['@jaeger.tracer']
     tags:
       - {name: 'kernel.event_subscriber' }
-  jaeger.span.handler.background:
-    class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
-    arguments: ['@jaeger.tracer']
-  jaeger.span.background.listener.finish:
-    class: Jaeger\Symfony\Bridge\BackgroundFinishListener
-    arguments: ['@jaeger.span.handler.background']
-    tags:
-      - {name: 'kernel.event_subscriber' }
   jaeger.span.background.listener.start:
     class: Jaeger\Symfony\Bridge\BackgroundStartListener
     arguments: ['@jaeger.span.handler.background']
+    tags:
+      - {name: 'kernel.event_subscriber' }
+  jaeger.span.handler.listener.flush:
+    class: Jaeger\Symfony\Bridge\HandlerFlushListener
+    arguments: ['@jaeger.span.handler.background', '@jaeger.span.handler.gloabal']
     tags:
       - {name: 'kernel.event_subscriber' }
