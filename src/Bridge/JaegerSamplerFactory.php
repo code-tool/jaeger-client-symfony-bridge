@@ -13,21 +13,20 @@ use Jaeger\Sampler\SamplerInterface;
 
 class JaegerSamplerFactory
 {
-    private $samplers;
-
-    public function __construct(array $samplers = [])
+    public function isApcuOn() : bool
     {
-        $this->samplers = $samplers;
+        if (false === extension_loaded('apcu')) {
+            return false;
+        }
+
+        if (PHP_SAPI !== 'cli') {
+            return true;
+        }
+
+        return (bool)ini_get('apc.enable_cli');
     }
 
-    public function add(string $type, SamplerInterface $sampler): JaegerSamplerFactory
-    {
-        $this->samplers[$type] = $sampler;
-
-        return $this;
-    }
-
-    public function sampler(string $type, $param)
+    public function sampler(string $type, $param) : SamplerInterface
     {
         switch ($type) {
             case 'const':
@@ -35,7 +34,7 @@ class JaegerSamplerFactory
             case 'probabilistic':
                 return new ProbabilisticSampler((float)$param);
             case 'ratelimiting':
-                if (false === extension_loaded('apcu')) {
+                if (false === $this->isApcuOn()) {
                     trigger_error(
                         'APCu extension is required by ratelimiting sampler, defaulting to probabilistic',
                         E_WARNING
@@ -46,7 +45,7 @@ class JaegerSamplerFactory
 
                 return new RateLimitingSampler($param, new ConstGenerator());
             case 'adaptive':
-                if (false === extension_loaded('apcu')) {
+                if (false === $this->isApcuOn()) {
                     trigger_error(
                         'APCu extension is required by adaptive sampler, defaulting to probabilistic',
                         E_WARNING

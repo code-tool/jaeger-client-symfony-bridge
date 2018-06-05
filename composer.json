@@ -13,7 +13,7 @@
     "symfony/config": "^2.6 || ^3.4 || ^4",
     "symfony/http-kernel": "^2.6 || ^3.4 || ^4",
     "symfony/dependency-injection": "^2.6 || ^3.4 || ^4",
-    "code-tool/jaeger-client-php": "^2.12.0"
+    "code-tool/jaeger-client-php": "^2.12.2"
   },
   "require-dev": {
     "phpunit/phpunit": "@stable"
