@@ -42,22 +42,12 @@ class JaegerSamplerFactory
                 return new ProbabilisticSampler((float)$param);
             case 'ratelimiting':
                 if (false === $this->isApcuOn()) {
-                    trigger_error(
-                        'APCu extension is required by ratelimiting sampler, defaulting to probabilistic',
-                        E_WARNING
-                    );
-
                     return new ProbabilisticSampler((float)$param);
                 }
 
                 return new RateLimitingSampler($param, new ConstGenerator());
             case 'adaptive':
                 if (false === $this->isApcuOn()) {
-                    trigger_error(
-                        'APCu extension is required by adaptive sampler, defaulting to probabilistic',
-                        E_WARNING
-                    );
-
                     return new ProbabilisticSampler((float)$param);
                 }
 
