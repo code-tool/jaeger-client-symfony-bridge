@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 namespace Jaeger\Symfony;
 
 use Jaeger\Symfony\Resources\DependencyInjection\CodecRegistryCompilerPass;

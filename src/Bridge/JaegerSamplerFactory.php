@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Sampler\AdaptiveSampler;
@@ -13,7 +11,10 @@ use Jaeger\Sampler\SamplerInterface;
 
 class JaegerSamplerFactory
 {
-    public function isApcuOn() : bool
+    /**
+     * @return bool
+     */
+    public function isApcuOn()
     {
         if (false === extension_loaded('apcu')) {
             return false;
@@ -26,7 +27,13 @@ class JaegerSamplerFactory
         return (bool)ini_get('apc.enable_cli');
     }
 
-    public function sampler(string $type, $param) : SamplerInterface
+    /**
+     * @param string $type
+     * @param        $param
+     *
+     * @return SamplerInterface
+     */
+    public function sampler($type, $param)
     {
         switch ($type) {
             case 'const':
