@@ -7,19 +7,16 @@
     }
   },
   "require": {
-    "php": "~5.6 || ~7.1",
-    "symfony/event-dispatcher": "~2 || ~3 || ~4",
-    "symfony/console": "~2 || ~3 || ~4",
-    "symfony/http-kernel": "~2 || ~3 || ~4",
-    "symfony/dependency-injection": "~2 || ~3 || ~4",
-    "code-tool/jaeger-client-php": "~1.7 || ~2.7 || ~4"
+    "php": "^5.6 || ^7",
+    "symfony/event-dispatcher": "^2.6 || ^3.4 || ^4",
+    "symfony/console": "^2.6 || ^3.4 || ^4",
+    "symfony/config": "^2.6 || ^3.4 || ^4",
+    "symfony/http-kernel": "^2.6 || ^3.4 || ^4",
+    "symfony/dependency-injection": "^2.6 || ^3.4 || ^4",
+    "code-tool/jaeger-client-php": "~1.7 || ~2.7"
   },
   "require-dev": {
-    "php-ds/php-ds": "@stable",
     "phpunit/phpunit": "@stable"
-  },
-  "suggest": {
-    "ext-ds": "Efficient data structures"
   },
   "minimum-stability": "dev",
   "prefer-stable": true

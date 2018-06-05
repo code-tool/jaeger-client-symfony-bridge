@@ -1,14 +1,16 @@
 parameters:
+  service_name: app
   env(JAEGER_HOST): localhost
   env(JAEGER_PORT): 6832
   env(JAEGER_BUFFER_SIZE): 16384
-  env(OPENTRACE_SAMPLER_RATE): 0.001
+  env(JAEGER_SAMPLER_TYPE): adaptive
+  env(JAEGER_SAMPLER_PARAM): 0.001
   env(JAEGER_CONTEXT_FORMAT): 'text'
   env(JAEGER_CONTEXT_ENV): 'UBER_TRACE_ID'
   env(JAEGER_CONTEXT_HEADER): 'uber-trace-id'
-  env(JAEGER_DEBUG_ENV): 'JAEGER_DEBUG'
-  env(JAEGER_DEBUG_COOKIE): 'jaeger_debug'
-  service_name: app
+  env(JAEGER_DEBUG_ENV): 'DEBUG_REQUEST'
+  env(JAEGER_DEBUG_COOKIE): 'debug.request'
+  env(JAEGER_SERVICE_NAME): '%service_name%'
 services:
   spl.stack:
     class: SplStack
@@ -29,22 +31,50 @@ services:
       -
         method: offsetSet
         arguments: ['text', '@jaeger.codec.text']
+  jaeger.sampler.generator.const:
+    class: Jaeger\Sampler\ConstGenerator
+  jaeger.sampler.generator.operation:
+    class: Jaeger\Sampler\OperationGenerator
   jaeger.sampler.always:
+    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
     class: Jaeger\Sampler\ConstSampler
     arguments: [true]
   jaeger.sampler.const:
+    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
     class: Jaeger\Sampler\ConstSampler
     arguments: ['%kernel.debug%']
   jaeger.sampler.probabilistic:
+    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
     class: Jaeger\Sampler\ProbabilisticSampler
-    arguments: ['%env(OPENTRACE_SAMPLER_RATE)%']
-  jaeger.sampler: '@jaeger.sampler.probabilistic'
+    arguments: ['%env(JAEGER_SAMPLER_PARAM)%']
+  jaeger.sampler.ratelimit:
+    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
+    class: Jaeger\Sampler\RateLimitingSampler
+    arguments:
+      - '%env(JAEGER_SAMPLER_PARAM)%'
+      - '@jaeger.sampler.generator.const'
+  jaeger.sampler.ratelimit.operation:
+    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
+    class: Jaeger\Sampler\RateLimitingSampler
+    arguments:
+      - '%env(JAEGER_SAMPLER_PARAM)%'
+      - '@jaeger.sampler.generator.operation'
+  jaeger.sampler.adaptive:
+    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
+    class: Jaeger\Sampler\AdaptiveSampler
+    arguments: ['@jaeger.sampler.ratelimit.operation', '@jaeger.sampler.probabilistic']
+  jaeger.sampler.factory:
+    class: Jaeger\Symfony\Bridge\JaegerSamplerFactory
+  jaeger.sampler:
+    class: Jaeger\Sampler\SamplerInterface
+    factory: ['@jaeger.sampler.factory', 'sampler']
+    arguments: ['%env(JAEGER_SAMPLER_TYPE)%', '%env(JAEGER_SAMPLER_PARAM)%']
   jaeger.span.factory:
     class: Jaeger\Span\Factory\SpanFactory
     arguments: ['@id.generator.span', '@jaeger.sampler']
   client.thrift:
     class: Jaeger\Client\ThriftClient
-    arguments: ['%service_name%', '@thrift.agent']
+    arguments: ['%env(JAEGER_SERVICE_NAME)%', '@thrift.agent']
   thrift.agent:
     class: Jaeger\Thrift\Agent\AgentClient
     arguments: ['@thrift.protocol']
