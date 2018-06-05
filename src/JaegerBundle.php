@@ -1,4 +1,5 @@
 <?php
+
 namespace Jaeger\Symfony;
 
 use Jaeger\Symfony\Resources\DependencyInjection\CodecRegistryCompilerPass;
@@ -21,6 +22,7 @@ class JaegerBundle extends Bundle
             ->addCompilerPass(new DebugExtractorChainCompilerPass())
             ->addCompilerPass(new NameGeneratorChainCompilerPass());
     }
+
 
     public function getContainerExtension()
     {

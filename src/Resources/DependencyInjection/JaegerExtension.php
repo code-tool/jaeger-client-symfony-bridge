@@ -1,4 +1,5 @@
 <?php
+
 namespace Jaeger\Symfony\Resources\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
