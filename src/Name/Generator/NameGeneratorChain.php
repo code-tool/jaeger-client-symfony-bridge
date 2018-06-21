@@ -35,6 +35,6 @@ class NameGeneratorChain implements NameGeneratorInterface
             }
         }
 
-        return '';
+        return 'route.unknown';
     }
 }
