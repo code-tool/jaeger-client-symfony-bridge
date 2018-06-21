@@ -19,7 +19,7 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         return [
             KernelEvents::REQUEST => ['onRequest', 30],
             ConsoleEvents::COMMAND => ['onCommand', 30],
-            KernelEvents::TERMINATE => ['onTerminate'],
+            KernelEvents::TERMINATE => ['onTerminate', -16384],
             ConsoleEvents::TERMINATE => ['onTerminate'],
         ];
     }
