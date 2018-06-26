@@ -13,6 +13,7 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 {
     private $name = '';
 
+    const MAX_LENGTH = 64;
 
     public static function getSubscribedEvents()
     {
@@ -31,26 +32,32 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         return $this;
     }
 
+    public function setName(string $name): DefaultNameGenerator
+    {
+        if (self::MAX_LENGTH < strlen($name)) {
+            $name = substr($name, 0, self::MAX_LENGTH);
+        }
+        $this->name = $name;
+
+        return $this;
+    }
+
+
     public function onRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
         if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
-            $this->name = ($controller = $request->attributes->get('_controller', null))
+            $name = ($controller = $request->attributes->get('_controller', null))
                 ? sprintf('fragment.%s', $controller)
                 : 'fragment';
-
-            return $this;
+            return $this->setName($name);
         }
 
         if (null === ($routeName = $request->attributes->get('_route', null))) {
-            $this->name = $request->getRequestUri();
-
-            return $this;
+            return $this->setName($request->getRequestUri());
         }
 
-        $this->name = $routeName;
-
-        return $this;
+        return $this->setName($routeName);
     }
 
     public function onTerminate()
