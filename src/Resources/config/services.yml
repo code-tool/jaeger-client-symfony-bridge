@@ -8,8 +8,8 @@ parameters:
   env(JAEGER_CONTEXT_FORMAT): 'text'
   env(JAEGER_CONTEXT_ENV): 'UBER_TRACE_ID'
   env(JAEGER_CONTEXT_HEADER): 'uber-trace-id'
-  env(JAEGER_DEBUG_ENV): 'DEBUG_REQUEST'
-  env(JAEGER_DEBUG_COOKIE): 'debug.request'
+  env(JAEGER_DEBUG_ENV): 'debug'
+  env(JAEGER_DEBUG_COOKIE): 'debug'
   env(JAEGER_SERVICE_NAME): '%service_name%'
 services:
   spl.stack:
