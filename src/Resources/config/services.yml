@@ -1,10 +1,10 @@
 parameters:
   service_name: app
   env(JAEGER_HOST): localhost
-  env(JAEGER_PORT): 6832
-  env(JAEGER_BUFFER_SIZE): 16384
+  env(JAEGER_PORT): '6832'
+  env(JAEGER_BUFFER_SIZE): '32768'
   env(JAEGER_SAMPLER_TYPE): adaptive
-  env(JAEGER_SAMPLER_PARAM): 0.001
+  env(JAEGER_SAMPLER_PARAM): '0.001'
   env(JAEGER_CONTEXT_FORMAT): 'text'
   env(JAEGER_CONTEXT_ENV): 'UBER_TRACE_ID'
   env(JAEGER_CONTEXT_HEADER): 'uber-trace-id'
@@ -86,10 +86,10 @@ services:
     arguments: ['@thrift.transport']
   thrift.protocol: '@thrift.protocol.binary'
   thrift.transport.udp:
-    class: Jaeger\Transport\TUDPTransport
+    class: Jaeger\Symfony\Transport\SymfonyUDPTransport
     arguments: ['%env(JAEGER_HOST)%', '%env(JAEGER_PORT)%']
   thrift.transport.buffered:
-    class: Thrift\Transport\TBufferedTransport
+    class: Jaeger\Symfony\Transport\SymfonyBufferedTransport
     arguments: ['@thrift.transport.udp', '%env(JAEGER_BUFFER_SIZE)%', '%env(JAEGER_BUFFER_SIZE)%']
     calls:
       -
