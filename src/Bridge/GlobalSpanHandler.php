@@ -61,7 +61,7 @@ class GlobalSpanHandler
         if (null === $this->span || null === $this->durationUsec) {
             return;
         }
-        $this->span->finish($this->durationUsec);
+        $this->span->finish((int)$this->durationUsec);
         $this->span = $this->durationUsec = null;
     }
 }
