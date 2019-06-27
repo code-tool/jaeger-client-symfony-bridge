@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Jaeger\Symfony\Bridge;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class BackgroundStartListener implements EventSubscriberInterface
 {
@@ -16,15 +15,13 @@ class BackgroundStartListener implements EventSubscriberInterface
         $this->handler = $handler;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return [KernelEvents::TERMINATE => ['onTerminate', 16384],];
+        return [TerminateEvent::class => ['onTerminate', 16384],];
     }
 
-    public function onTerminate(PostResponseEvent $event)
+    public function onTerminate(TerminateEvent $event): void
     {
         $this->handler->start($event->getRequest());
-
-        return $this;
     }
 }

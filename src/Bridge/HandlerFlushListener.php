@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Jaeger\Symfony\Bridge;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class HandlerFlushListener implements EventSubscriberInterface
 {
@@ -20,7 +20,7 @@ class HandlerFlushListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return [KernelEvents::TERMINATE => ['onTerminate', -16384],];
+        return [TerminateEvent::class => ['onTerminate', -16384],];
     }
 
     public function onTerminate()

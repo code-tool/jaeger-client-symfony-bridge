@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Jaeger\Symfony\Bridge;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class GlobalSpanListener implements EventSubscriberInterface
 {
@@ -20,8 +20,8 @@ class GlobalSpanListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 30],
-            KernelEvents::TERMINATE => ['onTerminate', 4096],
+            RequestEvent::class => ['onRequest', 30],
+            TerminateEvent::class => ['onTerminate', 4096],
         ];
     }
 
@@ -32,7 +32,7 @@ class GlobalSpanListener implements EventSubscriberInterface
         return $this;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
             return $this;

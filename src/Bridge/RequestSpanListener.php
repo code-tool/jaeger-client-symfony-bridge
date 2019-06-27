@@ -12,10 +12,9 @@ use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class RequestSpanListener implements EventSubscriberInterface
 {
@@ -32,34 +31,30 @@ class RequestSpanListener implements EventSubscriberInterface
         $this->tracer = $tracer;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 29],
-            KernelEvents::RESPONSE => ['onResponse', -1024],
+            RequestEvent::class => ['onRequest', 29],
+            ResponseEvent::class => ['onResponse', -1024],
         ];
     }
 
-    public function onResponse(FilterResponseEvent $event)
+    public function onResponse(ResponseEvent $event): void
     {
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            return $this;
+            return;
         }
-
         if ($this->spans->isEmpty()) {
-            return $this;
+            return;
         }
-        $this->tracer->finish($this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode())));
-
-        return $this;
+        $this->spans->pop()->addTag(new HttpCodeTag($event->getResponse()->getStatusCode()))->finish();
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            return $this;
+            return;
         }
-
         $request = $event->getRequest();
         $this->spans->push(
             $this->tracer->start(
@@ -69,11 +64,9 @@ class RequestSpanListener implements EventSubscriberInterface
                     new HttpUriTag($request->getRequestUri()),
                     new SpanKindServerTag(),
                     new SymfonyComponentTag(),
-                    new SymfonyVersionTag()
+                    new SymfonyVersionTag(),
                 ]
             )
         );
-
-        return $this;
     }
 }

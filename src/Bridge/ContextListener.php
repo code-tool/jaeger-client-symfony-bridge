@@ -5,10 +5,9 @@ namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Symfony\Context\Extractor\ContextExtractorInterface;
 use Jaeger\Tracer\InjectableInterface;
-use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class ContextListener implements EventSubscriberInterface
 {
@@ -24,35 +23,32 @@ class ContextListener implements EventSubscriberInterface
         $this->extractor = $extractor;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 8192],
-            KernelEvents::REQUEST => ['onRequest', 8192],
+            ConsoleCommandEvent::class => ['onCommand', 8192],
+            RequestEvent::class => ['onRequest', 8192],
         ];
     }
 
-    public function onCommand()
+    public function onCommand(): void
     {
-        return $this->inject();
+        $this->inject();
     }
 
-    public function inject(): ContextListener
+    public function inject(): void
     {
         if (null === ($context = $this->extractor->extract())) {
-            return $this;
+            return;
         }
         $this->injectable->assign($context);
-
-        return $this;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         if (false === $event->isMasterRequest()) {
-            return $this;
+            return;
         }
-
-        return $this->inject();
+        $this->inject();
     }
 }

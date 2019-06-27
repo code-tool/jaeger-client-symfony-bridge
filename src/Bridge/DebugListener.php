@@ -5,10 +5,11 @@ namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Symfony\Debug\Extractor\DebugExtractorInterface;
 use Jaeger\Tracer\DebuggableInterface;
-use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class DebugListener implements EventSubscriberInterface
 {
@@ -16,56 +17,43 @@ class DebugListener implements EventSubscriberInterface
 
     private $extractor;
 
-    /**
-     * DebugListener constructor.
-     *
-     * @param DebuggableInterface     $debuggable
-     * @param DebugExtractorInterface $extractor
-     */
     public function __construct(DebuggableInterface $debuggable, DebugExtractorInterface $extractor)
     {
         $this->debuggable = $debuggable;
         $this->extractor = $extractor;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 8192],
-            KernelEvents::REQUEST => ['onRequest', 8192],
-            ConsoleEvents::TERMINATE => ['onTerminate'],
-            KernelEvents::TERMINATE => ['onTerminate'],
+            ConsoleCommandEvent::class => ['onCommand', 8192],
+            RequestEvent::class => ['onRequest', 8192],
+            ConsoleTerminateEvent::class => ['onTerminate'],
+            TerminateEvent::class => ['onTerminate'],
         ];
     }
 
-    public function onTerminate()
+    public function onTerminate(): void
     {
         $this->debuggable->disable();
-
-        return $this;
     }
 
-    public function onCommand()
+    public function onCommand(): void
     {
         if ('' === ($debugId = $this->extractor->getDebug())) {
-            return $this;
+            return;
         }
         $this->debuggable->enable($debugId);
-
-        return $this;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event)
     {
         if (false === $event->isMasterRequest()) {
-            return $this;
+            return;
         }
-
         if ('' === ($debugId = $this->extractor->getDebug())) {
-            return $this;
+            return;
         }
         $this->debuggable->enable($debugId);
-
-        return $this;
     }
 }

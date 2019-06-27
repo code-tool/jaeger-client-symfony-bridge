@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace Jaeger\Symfony\Debug\Extractor;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberInterface
 {
@@ -19,30 +18,24 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
         $this->cookieName = $cookieName;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         if (false === $event->isMasterRequest()) {
-            return $this;
+            return;
         }
-
         $request = $event->getRequest();
         if (false === $request->cookies->has($this->cookieName)) {
-            return $this;
+            return;
         }
-
         $this->debugId = (string)$request->cookies->get($this->cookieName, '');
-
-        return $this;
     }
 
-    public function onTerminate(PostResponseEvent $event)
+    public function onTerminate(TerminateEvent $event): void
     {
         if (false === $event->isMasterRequest()) {
-            return $this;
+            return;
         }
         $this->debugId = '';
-
-        return $this;
     }
 
     public function getDebug(): string
@@ -50,13 +43,11 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
         return $this->debugId;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 16384],
-            KernelEvents::TERMINATE => ['onTerminate'],
+            RequestEvent::class => ['onRequest', 16384],
+            TerminateEvent::class => ['onTerminate'],
         ];
     }
-
-
 }

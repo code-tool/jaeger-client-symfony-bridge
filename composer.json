@@ -8,12 +8,12 @@
   },
   "require": {
     "php": ">=7.1",
-    "symfony/event-dispatcher": "^2.6 || ^3.4 || ^4",
-    "symfony/console": "^2.6 || ^3.4 || ^4",
-    "symfony/config": "^2.6 || ^3.4 || ^4",
-    "symfony/http-kernel": "^2.6 || ^3.4 || ^4",
-    "symfony/dependency-injection": "^2.6 || ^3.4 || ^4",
-    "code-tool/jaeger-client-php": "^2.12.2"
+    "symfony/event-dispatcher": "^4.3",
+    "symfony/console": "^4.3",
+    "symfony/config": "^4.3",
+    "symfony/http-kernel": "^4.3",
+    "symfony/dependency-injection": "^4.3",
+    "code-tool/jaeger-client-php": "^3"
   },
   "require-dev": {
     "phpunit/phpunit": "@stable"

@@ -49,7 +49,7 @@ class BackgroundSpanHandler
         if (null === $this->span) {
             return $this;
         }
-        $this->tracer->finish($this->span);
+        $this->span->finish();
 
         return $this;
     }

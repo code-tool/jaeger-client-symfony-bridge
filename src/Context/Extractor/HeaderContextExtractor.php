@@ -7,9 +7,8 @@ use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
 use Jaeger\Span\Context\SpanContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class HeaderContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
 {
@@ -31,11 +30,11 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         $this->headerName = $headerName;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 16384],
-            KernelEvents::TERMINATE => ['onTerminate'],
+            RequestEvent::class => ['onRequest', 16384],
+            TerminateEvent::class => ['onTerminate'],
         ];
     }
 
@@ -44,29 +43,23 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         return $this->context;
     }
 
-    public function onTerminate(PostResponseEvent $event)
+    public function onTerminate(TerminateEvent $event): void
     {
         if (false === $event->isMasterRequest()) {
-            return $this;
+            return;
         }
         $this->context = null;
-
-        return $this;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         if (false === $event->isMasterRequest()) {
-            return $this;
+            return;
         }
         $request = $event->getRequest();
         if ($request->headers->has($this->headerName)
             && ($context = $this->registry[$this->format]->decode($request->headers->get($this->headerName)))) {
             $this->context = $context;
-
-            return $this;
         }
-
-        return $this;
     }
 }

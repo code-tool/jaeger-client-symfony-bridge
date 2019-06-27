@@ -6,7 +6,8 @@ namespace Jaeger\Symfony\Context\Extractor;
 use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
 use Jaeger\Span\Context\SpanContext;
-use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
@@ -29,19 +30,17 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
         $this->envName = $envName;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            ConsoleEvents::COMMAND => ['onCommand', 16384],
-            ConsoleEvents::TERMINATE => ['onTerminate'],
+            ConsoleCommandEvent::class => ['onCommand', 16384],
+            ConsoleTerminateEvent::class => ['onTerminate'],
         ];
     }
 
-    public function onTerminate()
+    public function onTerminate(): void
     {
         $this->context = null;
-
-        return $this;
     }
 
     public function extract(): ?SpanContext
@@ -49,17 +48,14 @@ class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberI
         return $this->context;
     }
 
-    public function onCommand()
+    public function onCommand(): void
     {
         if (null === ($data = $_ENV[$this->envName] ?? null)) {
-            return $this;
+            return;
         }
-
         if (null === ($context = $this->registry[$this->format]->decode($data))) {
-            return $this;
+            return;
         }
         $this->context = $context;
-
-        return $this;
     }
 }

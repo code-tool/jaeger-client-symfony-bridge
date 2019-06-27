@@ -3,68 +3,58 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Name\Generator;
 
-use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
 {
     private $name = '';
 
-    const MAX_LENGTH = 64;
+    public const MAX_LENGTH = 64;
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 30],
-            ConsoleEvents::COMMAND => ['onCommand', 30],
-            KernelEvents::TERMINATE => ['onTerminate', -16384],
-            ConsoleEvents::TERMINATE => ['onTerminate'],
+            RequestEvent::class => ['onRequest', 30],
+            ConsoleCommandEvent::class => ['onCommand', 30],
+            TerminateEvent::class => ['onTerminate', -16384],
+            ConsoleTerminateEvent::class => ['onTerminate'],
         ];
     }
 
-    public function onCommand(ConsoleCommandEvent $event)
+    public function onCommand(ConsoleCommandEvent $event): void
     {
         $this->name = $event->getCommand()->getName();
-
-        return $this;
     }
 
-    public function setName(string $name): DefaultNameGenerator
+    public function setName(string $name)
     {
         if (self::MAX_LENGTH < strlen($name)) {
             $name = substr($name, 0, self::MAX_LENGTH);
         }
         $this->name = $name;
-
-        return $this;
     }
 
-
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
             $name = ($controller = $request->attributes->get('_controller', null))
                 ? sprintf('fragment.%s', $controller)
                 : 'fragment';
-            return $this->setName($name);
-        }
+            $this->setName($name);
 
-        if (null === ($routeName = $request->attributes->get('_route', null))) {
-            return $this->setName($request->getRequestUri());
+            return;
         }
-
-        return $this->setName($routeName);
+        $this->setName($request->attributes->get('_route', $request->getRequestUri()));
     }
 
-    public function onTerminate()
+    public function onTerminate(): void
     {
         $this->name = '';
-
-        return $this;
     }
 
     public function generate(): string

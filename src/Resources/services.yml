@@ -31,38 +31,6 @@ services:
       -
         method: offsetSet
         arguments: ['text', '@jaeger.codec.text']
-  jaeger.sampler.generator.const:
-    class: Jaeger\Sampler\ConstGenerator
-  jaeger.sampler.generator.operation:
-    class: Jaeger\Sampler\OperationGenerator
-  jaeger.sampler.always:
-    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
-    class: Jaeger\Sampler\ConstSampler
-    arguments: [true]
-  jaeger.sampler.const:
-    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
-    class: Jaeger\Sampler\ConstSampler
-    arguments: ['%kernel.debug%']
-  jaeger.sampler.probabilistic:
-    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
-    class: Jaeger\Sampler\ProbabilisticSampler
-    arguments: ['%env(JAEGER_SAMPLER_PARAM)%']
-  jaeger.sampler.ratelimit:
-    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
-    class: Jaeger\Sampler\RateLimitingSampler
-    arguments:
-      - '%env(JAEGER_SAMPLER_PARAM)%'
-      - '@jaeger.sampler.generator.const'
-  jaeger.sampler.ratelimit.operation:
-    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
-    class: Jaeger\Sampler\RateLimitingSampler
-    arguments:
-      - '%env(JAEGER_SAMPLER_PARAM)%'
-      - '@jaeger.sampler.generator.operation'
-  jaeger.sampler.adaptive:
-    deprecated: The "%service_id%" service is deprecated since 2.12 and will be removed in 3.0
-    class: Jaeger\Sampler\AdaptiveSampler
-    arguments: ['@jaeger.sampler.ratelimit.operation', '@jaeger.sampler.probabilistic']
   jaeger.sampler.factory:
     class: Jaeger\Symfony\Bridge\JaegerSamplerFactory
   jaeger.sampler:
@@ -96,16 +64,21 @@ services:
         method: open
         arguments: []
   thrift.transport: '@thrift.transport.udp'
+  jaeger.span.manager:
+    class: Jaeger\Span\SpanManager
+  jaeger.context.manager: '@jaeger.span.manager'
   jaeger.tracer.abstract:
       class: Jaeger\Tracer\Tracer
       abstract: true
       arguments:
-        - '@spl.stack'
+        - '@jaeger.span.manager'
         - '@jaeger.span.factory'
         - '@client.thrift'
   jaeger.tracer:
     class: Jaeger\Tracer\Tracer
     parent: jaeger.tracer.abstract
+  jaeger.debuggable: '@jaeger.tracer'
+  jaeger.flushable: '@jaeger.tracer'
   jaeger.context.extractor.env:
     class: Jaeger\Symfony\Context\Extractor\EnvContextExtractor
     arguments:
@@ -170,14 +143,14 @@ services:
   jaeger.debug.listener:
     class: Jaeger\Symfony\Bridge\DebugListener
     arguments:
-      - '@jaeger.tracer'
+      - '@jaeger.debuggable'
       - '@jaeger.debug.extractor'
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.context.listener:
     class: Jaeger\Symfony\Bridge\ContextListener
     arguments:
-      - '@jaeger.tracer'
+      - '@jaeger.span.manager'
       - '@jaeger.context.extractor'
     tags:
       - {name: 'kernel.event_subscriber' }
@@ -201,7 +174,7 @@ services:
       - {name: 'kernel.event_subscriber' }
   jaeger.tracer.bridge.symfony:
     class: Jaeger\Symfony\Bridge\TracerBridge
-    arguments: ['@jaeger.tracer']
+    arguments: ['@jaeger.flushable']
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.span.background.listener.start:

@@ -41,32 +41,27 @@ class GlobalSpanHandler
                 new HttpUriTag($request->getRequestUri()),
                 new SpanKindServerTag(),
                 new SymfonyComponentTag(),
-                new SymfonyVersionTag()
+                new SymfonyVersionTag(),
             ]
-        )->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))));
+        )->start(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
 
         return $this;
     }
 
-    public function finish(): GlobalSpanHandler
+    public function finish(): void
     {
         if (null === $this->span) {
-            return $this;
+            return;
         }
-        $this->durationUsec = (int)(microtime(true) * 1000000 - $this->span->startTime);
-
-        return $this;
+        $this->durationUsec = microtime(true) * 1000000 - $this->span->startTime;
     }
 
-    public function flush(): GlobalSpanHandler
+    public function flush(): void
     {
         if (null === $this->span || null === $this->durationUsec) {
-            return $this;
+            return;
         }
-
-        $this->tracer->finish($this->span, $this->durationUsec);
+        $this->span->finish($this->durationUsec);
         $this->span = $this->durationUsec = null;
-
-        return $this;
     }
 }

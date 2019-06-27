@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jaeger\Symfony\Resources\DependencyInjection;
+namespace Jaeger\Symfony\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,7 +15,7 @@ class JaegerExtension extends Extension
     {
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__ . '/../config')
+            new FileLocator(__DIR__ . '/../Resources')
         );
         $loader->load('services.yml');
     }

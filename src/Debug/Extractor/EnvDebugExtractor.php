@@ -17,7 +17,7 @@ class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInter
         $this->envName = $envName;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             ConsoleEvents::COMMAND => ['onCommand', 16384],
@@ -39,11 +39,6 @@ class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInter
 
     public function onCommand()
     {
-        if (null === ($data = $_ENV[$this->envName] ?? null)) {
-            return $this;
-        }
-        $this->debugId = (string)$_ENV[$this->envName];
-
-        return $this;
+        $this->debugId = $_ENV[$this->envName] ?? '';
     }
 }
