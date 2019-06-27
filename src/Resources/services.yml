@@ -64,8 +64,9 @@ services:
         method: open
         arguments: []
   thrift.transport: '@thrift.transport.udp'
-  jaeger.span.manager:
-    class: Jaeger\Span\SpanManager
+  jaeger.span.manager.stack:
+    class: Jaeger\Span\StackSpanManager
+  jaeger.span.manager: '@jaeger.span.manager.stack'
   jaeger.context.manager: '@jaeger.span.manager'
   jaeger.tracer.abstract:
       class: Jaeger\Tracer\Tracer
