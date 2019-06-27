@@ -43,7 +43,7 @@ class GlobalSpanHandler
                 new SymfonyComponentTag(),
                 new SymfonyVersionTag(),
             ]
-        )->start(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
+        )->start(1000000 * (int)$request->server->get('REQUEST_TIME_FLOAT', microtime(true)));
 
         return $this;
     }
