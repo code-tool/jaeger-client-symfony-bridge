@@ -11,6 +11,7 @@ parameters:
   env(JAEGER_DEBUG_ENV): 'debug'
   env(JAEGER_DEBUG_COOKIE): 'debug'
   env(JAEGER_SERVICE_NAME): '%service_name%'
+  env(JAEGER_SPAN_BATCH): '16'
 services:
   spl.stack:
     class: SplStack
@@ -42,7 +43,7 @@ services:
     arguments: ['@id.generator.span', '@jaeger.sampler']
   client.thrift:
     class: Jaeger\Client\ThriftClient
-    arguments: ['%env(JAEGER_SERVICE_NAME)%', '@thrift.agent']
+    arguments: ['%env(JAEGER_SERVICE_NAME)%', '@thrift.agent', '%env(JAEGER_SPAN_BATCH)%']
   thrift.agent:
     class: Jaeger\Thrift\Agent\AgentClient
     arguments: ['@thrift.protocol']
