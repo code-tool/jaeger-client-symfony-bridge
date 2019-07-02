@@ -15,7 +15,7 @@ class JaegerExtension extends Extension
     {
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__ . '/Resources')
+            new FileLocator(__DIR__ . '../Resources')
         );
         $loader->load('services.yml');
     }
