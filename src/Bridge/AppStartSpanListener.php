@@ -36,7 +36,7 @@ class AppStartSpanListener implements EventSubscriberInterface
             ->addTag(new SpanKindServerTag())
             ->addTag(new SymfonyComponentTag())
             ->addTag(new SymfonyVersionTag())
-            ->start(1000000 * (int)$request->server->get('REQUEST_TIME_FLOAT', microtime(true)))
+            ->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))))
             ->finish();
 
         return $this;
