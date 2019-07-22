@@ -49,7 +49,9 @@ class JaegerSamplerFactory
                     new ProbabilisticSampler((float)$param)
                 );
             default:
-                throw new \RuntimeException('Unknown sampler type %s');
+                throw new \RuntimeException(
+                    \sprintf('Unknown sampler type "%s"', $type)
+                );
         }
     }
 }
