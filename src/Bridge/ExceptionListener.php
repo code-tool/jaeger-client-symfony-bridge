@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Bridge;
 
-use Jaeger\Span\SpanManagerInterface;
+use Jaeger\Span\SpanAwareInterface;
 use Jaeger\Tag\ErrorTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class ExceptionListener implements EventSubscriberInterface
@@ -21,7 +20,7 @@ class ExceptionListener implements EventSubscriberInterface
 
     public function __construct(
         TracerInterface $tracer,
-        SpanManagerInterface $spanManager,
+        SpanAwareInterface $spanManager,
         GlobalSpanHandler $globalSpanHandler
     ) {
         $this->tracer = $tracer;
@@ -35,40 +34,25 @@ class ExceptionListener implements EventSubscriberInterface
         return [
             ExceptionEvent::class => ['onKernelException', 0],
             RequestEvent::class => ['onRequest', 28],
-            TerminateEvent::class => ['onTerminate', 4097],
         ];
     }
 
     public function onKernelException(ExceptionEvent $event): void
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        $span = $this->spanManager->getSpan();
+
+        if (null === $span) {
             return;
         }
 
-        $span = $this->spanManager->getSpan();
-
-        if (null !== $span) {
-            $span->addTag(new ErrorTag());
-            $this->exceptionExist = true;
-        }
+        $span->addTag(new ErrorTag());
+        $this->exceptionExist = true;
     }
 
     public function onRequest(RequestEvent $event): void
     {
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            return;
-        }
-
         if ($this->exceptionExist) {
-            $span = $this->spanManager->getSpan();
-            $span->addTag(new ErrorTag());
-        }
-    }
-
-    public function onTerminate(): void
-    {
-        if ($this->exceptionExist) {
-            $this->globalSpanHandler->addTag(new ErrorTag());
+            $this->spanManager->getSpan()->addTag(new ErrorTag());
         }
     }
 }

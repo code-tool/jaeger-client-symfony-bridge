@@ -65,9 +65,4 @@ class GlobalSpanHandler
         $this->span->finish((int)$this->durationUsec);
         $this->span = $this->durationUsec = null;
     }
-
-    public function addTag(Tag $tag): void
-    {
-        $this->span->addTag($tag);
-    }
 }
