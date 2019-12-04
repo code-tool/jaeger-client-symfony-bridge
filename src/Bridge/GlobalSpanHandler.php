@@ -10,7 +10,6 @@ use Jaeger\Symfony\Name\Generator\NameGeneratorInterface;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\SpanKindServerTag;
-use Jaeger\Thrift\Tag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
