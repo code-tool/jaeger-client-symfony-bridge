@@ -189,3 +189,9 @@ services:
     arguments: ['@jaeger.span.handler.background', '@jaeger.span.handler.gloabal']
     tags:
       - {name: 'kernel.event_subscriber' }
+  jaeger.exception.listener:
+    class: Jaeger\Symfony\Bridge\ExceptionListener
+    arguments:
+      - '@jaeger.span.manager'
+    tags:
+      - {name: 'kernel.event_subscriber'}
