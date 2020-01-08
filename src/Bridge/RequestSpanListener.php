@@ -82,7 +82,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
         $exception = $event->getThrowable();
 
-        $this->spans->current()
+        $this->spans->top()
             ->addTag(new ErrorTag())
             ->addLog(new ErrorLog($exception->getMessage(), $exception->getTraceAsString()))
         ;
