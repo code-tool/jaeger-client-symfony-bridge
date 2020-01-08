@@ -9,7 +9,6 @@ use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class AppStartSpanListener implements EventSubscriberInterface
 {
@@ -28,7 +27,7 @@ class AppStartSpanListener implements EventSubscriberInterface
     public function onRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (false === $event->isMasterRequest()) {
             return $this;
         }
         $this->tracer

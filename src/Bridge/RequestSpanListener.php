@@ -17,7 +17,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class RequestSpanListener implements EventSubscriberInterface
 {
@@ -45,7 +44,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onResponse(ResponseEvent $event): void
     {
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+        if ($event->isMasterRequest()) {
             return;
         }
         if ($this->spans->isEmpty()) {
@@ -56,7 +55,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event): void
     {
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+        if ($event->isMasterRequest()) {
             return;
         }
         $request = $event->getRequest();
