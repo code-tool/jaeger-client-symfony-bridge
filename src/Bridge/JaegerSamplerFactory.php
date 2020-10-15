@@ -38,7 +38,7 @@ class JaegerSamplerFactory
                     return new ProbabilisticSampler((float)$param);
                 }
 
-                return new RateLimitingSampler($param, new ConstGenerator());
+                return new RateLimitingSampler((float)$param, new ConstGenerator());
             case 'adaptive':
                 if (false === $this->isApcuOn()) {
                     return new ProbabilisticSampler((float)$param);
