@@ -1,0 +1,12 @@
+parameters:
+  # Will be configured in DI extension
+  # jaeger.sampler.operation_denylist: []
+
+services:
+  jaeger.sampler.denylist:
+    class: Jaeger\Symfony\Sampler\DenylistOperationsSampler
+    decorates: jaeger.sampler
+    decoration_priority: 10
+    arguments:
+      - '@jaeger.sampler.denylist.inner'
+      - '%jaeger.sampler.operation_denylist%'

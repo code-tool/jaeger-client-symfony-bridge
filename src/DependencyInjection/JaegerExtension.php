@@ -18,5 +18,13 @@ class JaegerExtension extends Extension
             new FileLocator(__DIR__ . '/../Resources')
         );
         $loader->load('services.yml');
+
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        if ($this->isConfigEnabled($container, $config['denylist'])) {
+            $container->setParameter('jaeger.sampler.operation_denylist', $config['denylist']['operation_names']);
+            $loader->load('denylist.yml');
+        }
     }
 }
