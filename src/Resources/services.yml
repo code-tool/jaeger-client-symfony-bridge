@@ -140,6 +140,9 @@ services:
     class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
     arguments: ['@jaeger.tracer']
   jaeger.span.handler.gloabal:
+    alias: jaeger.span.handler.global
+    deprecated: 'The "%alias_id%" service is deprecated. Use "jaeger.span.handler.global".'
+  jaeger.span.handler.global:
     class: Jaeger\Symfony\Bridge\GlobalSpanHandler
     arguments: ['@jaeger.tracer', '@jaeger.name.generator']
   jaeger.debug.listener:
@@ -166,7 +169,7 @@ services:
       - {name: 'kernel.event_subscriber' }
   jaeger.global.span.listener:
     class: Jaeger\Symfony\Bridge\GlobalSpanListener
-    arguments: ['@jaeger.span.handler.gloabal']
+    arguments: ['@jaeger.span.handler.global']
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.app.start.listener:
@@ -186,7 +189,7 @@ services:
       - {name: 'kernel.event_subscriber' }
   jaeger.span.handler.listener.flush:
     class: Jaeger\Symfony\Bridge\HandlerFlushListener
-    arguments: ['@jaeger.span.handler.background', '@jaeger.span.handler.gloabal']
+    arguments: ['@jaeger.span.handler.background', '@jaeger.span.handler.global']
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.exception.listener:
