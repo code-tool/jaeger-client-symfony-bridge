@@ -28,7 +28,7 @@ class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onRequest', 30],
+            RequestEvent::class => ['onRequest', 31],
             TerminateEvent::class => ['onTerminate', -16384],
         ];
     }

@@ -16,8 +16,8 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onRequest', 30],
-            ConsoleCommandEvent::class => ['onCommand', 30],
+            RequestEvent::class => ['onRequest', 31],
+            ConsoleCommandEvent::class => ['onCommand', 31],
             TerminateEvent::class => ['onTerminate', -16384],
             ConsoleTerminateEvent::class => ['onTerminate'],
         ];

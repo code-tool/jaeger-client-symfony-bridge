@@ -28,7 +28,7 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
-            ConsoleCommandEvent::class => ['onCommand', 30],
+            ConsoleCommandEvent::class => ['onCommand', 31],
             ConsoleTerminateEvent::class => ['onTerminate'],
         ];
     }
