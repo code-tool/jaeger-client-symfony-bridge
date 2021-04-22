@@ -15,7 +15,7 @@ class ShortenGeneratorDecorator extends AbstractGeneratorDecorator
 
     public function shorten(string $name)
     {
-        if ($this->maxLength >= strlen($name)) {
+        if ($this->maxLength >= \strlen($name)) {
             return $name;
         }
 
