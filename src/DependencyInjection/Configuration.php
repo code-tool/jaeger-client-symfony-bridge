@@ -28,6 +28,20 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('name_generator')
+                    ->canBeEnabled()
+                    ->children()
+                        ->scalarNode('max_length')->defaultValue(64)->end()
+                        ->arrayNode('command')
+                            ->useAttributeAsKey('name')
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('request')
+                            ->useAttributeAsKey('name')
+                            ->scalarPrototype()->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
         // @formatter:on
 

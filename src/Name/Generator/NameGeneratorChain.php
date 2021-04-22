@@ -5,7 +5,7 @@ namespace Jaeger\Symfony\Name\Generator;
 
 class NameGeneratorChain implements NameGeneratorInterface
 {
-    private $queue;
+    private \SplPriorityQueue $queue;
 
     public function __construct(\SplPriorityQueue $queue)
     {
