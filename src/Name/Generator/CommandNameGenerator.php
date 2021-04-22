@@ -27,7 +27,10 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public static function getSubscribedEvents(): array
     {
-        return [ConsoleCommandEvent::class => ['onCommand', 30], ConsoleTerminateEvent::class => ['onTerminate'],];
+        return [
+            ConsoleCommandEvent::class => ['onCommand', 30],
+            ConsoleTerminateEvent::class => ['onTerminate'],
+        ];
     }
 
     public function onCommand(ConsoleCommandEvent $event): void
@@ -35,7 +38,6 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
         if (null === $event->getCommand()) {
             return;
         }
-
         $this->name = (string)$event->getCommand()->getName();
     }
 
