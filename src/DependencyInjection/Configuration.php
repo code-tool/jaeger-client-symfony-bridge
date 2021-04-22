@@ -31,7 +31,7 @@ final class Configuration implements ConfigurationInterface
                 ->arrayNode('name_generator')
                     ->canBeEnabled()
                     ->children()
-                        ->scalarNode('max_length')->defaultValue(64)->end()
+                        ->integerNode('max_length')->defaultValue(64)->end()
                         ->arrayNode('command')
                             ->useAttributeAsKey('name')
                             ->scalarPrototype()->end()
