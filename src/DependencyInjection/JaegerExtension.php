@@ -20,35 +20,39 @@ class JaegerExtension extends Extension
         $loader->load('services.yml');
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+
         if ($this->isConfigEnabled($container, $config['denylist'])) {
             $container->setParameter('jaeger.sampler.operation_denylist', $config['denylist']['operation_names']);
             $loader->load('denylist.yml');
         }
+
         if ($this->isConfigEnabled($container, $config['name_generator'])) {
             $container->setParameter('jaeger.name.max_length', (int)$config['name_generator']['max_length']);
-            foreach ($config['name_generator']['request'] as $item => $alias) {
-                if ($container->has(\sprintf('jaeger.name.generator.%s', $alias))) {
+            foreach ($config['name_generator']['request'] as $item => $customGeneratorId) {
+                $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
+                if ($container->has($shortenedGeneratorId)) {
                     $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
                         'add',
-                        [$item, new Reference(\sprintf('jaeger.name.generator.%s', $alias))]
+                        [$item, new Reference($shortenedGeneratorId)]
                     );
                 } else {
                     $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
                         'add',
-                        [$item, new Reference($alias)]
+                        [$item, new Reference($customGeneratorId)]
                     );
                 }
             }
-            foreach ($config['name_generator']['command'] as $item => $alias) {
-                if ($container->has(\sprintf('jaeger.name.generator.%s', $alias))) {
+            foreach ($config['name_generator']['command'] as $item => $customGeneratorId) {
+                $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
+                if ($container->has($shortenedGeneratorId)) {
                     $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
                         'add',
-                        [$item, new Reference(\sprintf('jaeger.name.generator.%s', $alias))]
+                        [$item, new Reference($shortenedGeneratorId)]
                     );
                 } else {
                     $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
                         'add',
-                        [$item, new Reference($alias)]
+                        [$item, new Reference($customGeneratorId)]
                     );
                 }
             }
