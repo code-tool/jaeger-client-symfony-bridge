@@ -20,7 +20,7 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function add(string $regexp, NameGeneratorInterface $generator): CommandNameGenerator
     {
-        $this->generators[sprintf('/%s/', $regexp)] = $generator;
+        $this->generators[\sprintf('/%s/', $regexp)] = $generator;
 
         return $this;
     }
