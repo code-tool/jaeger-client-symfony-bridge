@@ -54,5 +54,5 @@ jaeger:
     command:  
       .* : 'controller'
     request:
-      'brand_routes_\d+': 'my_service_generator_alias'
+      'user_routes_\w+': 'my_service_generator_alias'
 ```
