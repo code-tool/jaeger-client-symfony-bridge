@@ -36,3 +36,23 @@ jaeger:
       - 'healthcheck'
       - 'metrics'
 ```
+
+
+## Name generation options
+
+You can specify just the suffix, if you name generator service is named as `jaeger.name.generator.*` or if you have any other naming scheme you can put the whole name into the configuration.
+Keys are considered regular expressions that `route` of the request or `name` of the command should match to use alternative generator.
+Expressions are checked top to bottom, if no match is found, default generator will be used
+
+Example bundle config with name generation feature:
+
+```yaml
+# config/jaeger.yaml
+jaeger:
+  name_generator:
+    max_length: 32
+    command:  
+      '.*': 'controller'
+    request:
+      'brand_routes_\d+': 'my_service_generator_alias'
+```
