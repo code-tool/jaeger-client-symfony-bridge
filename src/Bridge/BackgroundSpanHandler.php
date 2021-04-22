@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BackgroundSpanHandler
 {
-    private ?SpanInterface $span;
+    private ?SpanInterface $span = null;
 
     private TracerInterface $tracer;
 
