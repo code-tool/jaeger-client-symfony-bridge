@@ -150,7 +150,7 @@ services:
     alias: 'jaeger.name.generator.chain'
   jaeger.name.generator.shorten:
     class: Jaeger\Symfony\Name\Generator\ShortenGeneratorDecorator
-    decorates: '@jaeger.name.generator'
+    decorates: jaeger.name.generator
     arguments: ['@jaeger.name.generator.shorten.inner', '%jaeger.name.max_length%']
   jaeger.span.handler.background:
     class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
