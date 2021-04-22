@@ -20,7 +20,7 @@ class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function add(string $regexp, NameGeneratorInterface $generator): RequestNameGenerator
     {
-        $this->generators[sprintf('/%s/', $regexp)] = $generator;
+        $this->generators[$regexp] = $generator;
 
         return $this;
     }
