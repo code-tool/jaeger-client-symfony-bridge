@@ -23,8 +23,8 @@ class NameGeneratorChain implements NameGeneratorInterface
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {
-            if ('' !== ($debugId = $queue->extract()->generate())) {
-                return $debugId;
+            if ('' !== ($name = $queue->extract()->generate())) {
+                return $name;
             }
         }
 

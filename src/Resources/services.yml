@@ -127,6 +127,10 @@ services:
       - '@spl.priority.queue'
   jaeger.debug.extractor:
     alias: 'jaeger.debug.extractor.chain'
+  jaeger.name.generator.controller:
+    class: Jaeger\Symfony\Name\Generator\ControllerNameGenerator
+    tags:
+      - {name: 'kernel.event_subscriber' }
   jaeger.name.generator.default:
     class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
     tags:

@@ -27,16 +27,30 @@ class JaegerExtension extends Extension
         if ($this->isConfigEnabled($container, $config['name_generator'])) {
             $container->setParameter('jaeger.name.max_length', (int)$config['name_generator']['max_length']);
             foreach ($config['name_generator']['request'] as $item => $alias) {
-                $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
-                    'add',
-                    [$item, new Reference($alias)]
-                );
+                if ($container->has(\sprintf('jaeger.name.generator.%s', $alias))) {
+                    $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
+                        'add',
+                        [$item, new Reference(\sprintf('jaeger.name.generator.%s', $alias))]
+                    );
+                } else {
+                    $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
+                        'add',
+                        [$item, new Reference($alias)]
+                    );
+                }
             }
             foreach ($config['name_generator']['command'] as $item => $alias) {
-                $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
-                    'add',
-                    [$item, new Reference($alias)]
-                );
+                if ($container->has(\sprintf('jaeger.name.generator.%s', $alias))) {
+                    $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
+                        'add',
+                        [$item, new Reference(\sprintf('jaeger.name.generator.%s', $alias))]
+                    );
+                } else {
+                    $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
+                        'add',
+                        [$item, new Reference($alias)]
+                    );
+                }
             }
         }
     }
