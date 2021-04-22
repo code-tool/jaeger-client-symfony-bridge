@@ -27,7 +27,7 @@ class JaegerExtension extends Extension
         }
 
         if ($this->isConfigEnabled($container, $config['name_generator'])) {
-            $container->setParameter('jaeger.name.max_length', (int)$config['name_generator']['max_length']);
+            $container->setParameter('jaeger.name.max_length', $config['name_generator']['max_length']);
             foreach ($config['name_generator']['request'] as $item => $customGeneratorId) {
                 $regexp = \sprintf('/%s/', $item);
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);

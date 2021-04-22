@@ -21,7 +21,7 @@ class ControllerNameGenerator implements NameGeneratorInterface, EventSubscriber
 
     public function onRequest(RequestEvent $event): void
     {
-        $this->controller = $event->getRequest()->attributes->get('_controller', '');
+        $this->controller = (string)$event->getRequest()->attributes->get('_controller', '');
     }
 
     public function onTerminate(): void
