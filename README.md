@@ -57,6 +57,7 @@ jaeger:
   name_generator:
     max_length: 32
     command:  
+      '^app:report:.+': 'my_service_generator_alias'
       .* : 'controller'
     request:
       'user_routes_\w+': 'my_service_generator_alias'
