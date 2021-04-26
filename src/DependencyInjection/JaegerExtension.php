@@ -43,7 +43,7 @@ class JaegerExtension extends Extension
                     );
                 }
             }
-            foreach ($config['name_generator']['command'] as $item => $customGeneratorId) {
+            foreach ($config['name_generator']['command'] as $pattern => $customGeneratorId) {
                 $regexp = \sprintf('/%s/', $item);
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
                 if ($container->has($shortenedGeneratorId)) {
