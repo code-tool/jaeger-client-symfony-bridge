@@ -28,6 +28,7 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
+            // Subscribe after route was resolved and request attributes were set
             ConsoleCommandEvent::class => ['onCommand', 31],
             ConsoleTerminateEvent::class => ['onTerminate'],
         ];

@@ -14,6 +14,7 @@ class ControllerNameGenerator implements NameGeneratorInterface, EventSubscriber
     public static function getSubscribedEvents(): array
     {
         return [
+            // Subscribe after route was resolved and request attributes were set
             RequestEvent::class => ['onRequest', 31],
             TerminateEvent::class => ['onTerminate', -16384],
         ];
