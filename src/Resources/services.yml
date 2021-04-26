@@ -12,7 +12,6 @@ parameters:
   env(JAEGER_DEBUG_COOKIE): 'debug'
   env(JAEGER_SERVICE_NAME): '%service_name%'
   env(JAEGER_SPAN_BATCH): '16'
-  jaeger.name.max_length: 64
 
 services:
   spl.stack:
@@ -152,10 +151,6 @@ services:
       - '@spl.priority.queue'
   jaeger.name.generator:
     alias: 'jaeger.name.generator.chain'
-  jaeger.name.generator.shorten:
-    class: Jaeger\Symfony\Name\Generator\ShortenGeneratorDecorator
-    decorates: jaeger.name.generator
-    arguments: ['@jaeger.name.generator.shorten.inner', '%jaeger.name.max_length%']
   jaeger.span.handler.background:
     class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
     arguments: ['@jaeger.tracer']
