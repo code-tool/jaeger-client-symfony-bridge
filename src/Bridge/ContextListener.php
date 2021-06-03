@@ -7,6 +7,7 @@ use Jaeger\Symfony\Context\Extractor\ContextExtractorInterface;
 use Jaeger\Tracer\InjectableInterface;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class ContextListener implements EventSubscriberInterface
@@ -46,9 +47,25 @@ class ContextListener implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event): void
     {
-        if (false === $event->isMasterRequest()) {
+        if (false === $this->isMainRequestEvent($event)) {
             return;
         }
         $this->inject();
+    }
+
+    /**
+     * Use non-deprecated check method if availble
+     *
+     * @param KernelEvent $event
+     *
+     * @return bool
+     */
+    private function isMainRequestEvent(KernelEvent $event): bool
+    {
+        if (\method_exists($event, 'isMainRequest')) {
+            return $event->isMainRequest();
+        }
+
+        return $event->isMasterRequest();
     }
 }
