@@ -36,10 +36,11 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function onCommand(ConsoleCommandEvent $event): void
     {
-        if (null === $event->getCommand()) {
+        if (null === $command = $event->getCommand()) {
             return;
         }
-        $this->name = (string)$event->getCommand()->getName();
+
+        $this->name = (string)$command->getName();
     }
 
     public function onTerminate(): CommandNameGenerator

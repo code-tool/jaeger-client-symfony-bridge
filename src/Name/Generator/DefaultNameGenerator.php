@@ -26,22 +26,24 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function onCommand(ConsoleCommandEvent $event): void
     {
-        if (null === $event->getCommand()) {
+        if (null === $command = $event->getCommand()) {
             return;
         }
 
-        $this->name = (string)$event->getCommand()->getName();
+        $this->name = (string)$command->getName();
     }
 
     public function onRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
-            $this->name = ($controller = $request->attributes->get('_controller', null))
+        if (null !== $request->attributes->get('is_fragment')) {
+            $this->name = (null !== $controller = $request->attributes->get('_controller', null))
                 ? sprintf('fragment.%s', $controller)
                 : 'fragment';
+
             return;
         }
+
         $this->name = $request->attributes->get('_route', $request->getRequestUri());
     }
 
