@@ -18,6 +18,7 @@ class JaegerExtension extends Extension
             new FileLocator(__DIR__ . '/../Resources')
         );
         $loader->load('services.yml');
+
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
@@ -31,6 +32,7 @@ class JaegerExtension extends Extension
                 $loader->load('shorten.yml');
                 $container->setParameter('jaeger.name.max_length', $config['name_generator']['max_length']);
             }
+
             foreach ($config['name_generator']['request'] as $item => $customGeneratorId) {
                 $regexp = \sprintf('/%s/', $item);
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
@@ -46,6 +48,7 @@ class JaegerExtension extends Extension
                     );
                 }
             }
+
             foreach ($config['name_generator']['command'] as $pattern => $customGeneratorId) {
                 $regexp = \sprintf('/%s/', $item);
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
