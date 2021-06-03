@@ -9,10 +9,16 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
 {
+    /**
+     * @var NameGeneratorInterface[] Key - regexp, value - name generator
+     */
     private array $generators;
 
     private string $name = '';
 
+    /**
+     * @param NameGeneratorInterface[] $generators Key - regexp, value - name generator
+     */
     public function __construct(array $generators = [])
     {
         $this->generators = $generators;
