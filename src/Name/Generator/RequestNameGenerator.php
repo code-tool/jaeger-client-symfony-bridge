@@ -11,7 +11,7 @@ class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 {
     private array $generators;
 
-    private string $route;
+    private string $route = '';
 
     public function __construct(array $generators = [])
     {
