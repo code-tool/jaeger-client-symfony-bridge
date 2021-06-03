@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class ControllerNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
 {
-    private string $controller;
+    private string $controller = '';
 
     public static function getSubscribedEvents(): array
     {
