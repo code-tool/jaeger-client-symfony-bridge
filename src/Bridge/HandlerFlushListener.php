@@ -18,9 +18,9 @@ class HandlerFlushListener implements EventSubscriberInterface
         $this->globalHandler = $globalHandler;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return [TerminateEvent::class => ['onTerminate', -16384],];
+        return [TerminateEvent::class => ['onTerminate', -16384]];
     }
 
     public function onTerminate()
