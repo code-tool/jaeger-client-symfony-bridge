@@ -33,36 +33,34 @@ class JaegerExtension extends Extension
                 $container->setParameter('jaeger.name.max_length', $config['name_generator']['max_length']);
             }
 
-            foreach ($config['name_generator']['request'] as $item => $customGeneratorId) {
-                $regexp = \sprintf('/%s/', $item);
+            foreach ($config['name_generator']['request'] as $pattern => $customGeneratorId) {
+                $regexp = \sprintf('/%s/', $pattern);
+
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
                 if ($container->has($shortenedGeneratorId)) {
-                    $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
-                        'add',
-                        [$regexp, new Reference($shortenedGeneratorId)]
-                    );
-                } else {
-                    $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
+                    $customGeneratorId = $shortenedGeneratorId;
+                }
+
+                $container->getDefinition('jaeger.name.generator.request')
+                    ->addMethodCall(
                         'add',
                         [$regexp, new Reference($customGeneratorId)]
                     );
-                }
             }
 
             foreach ($config['name_generator']['command'] as $pattern => $customGeneratorId) {
                 $regexp = \sprintf('/%s/', $pattern);
+
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
                 if ($container->has($shortenedGeneratorId)) {
-                    $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
-                        'add',
-                        [$regexp, new Reference($shortenedGeneratorId)]
-                    );
-                } else {
-                    $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
+                    $customGeneratorId = $shortenedGeneratorId;
+                }
+
+                $container->getDefinition('jaeger.name.generator.command')
+                    ->addMethodCall(
                         'add',
                         [$regexp, new Reference($customGeneratorId)]
                     );
-                }
             }
         }
     }
