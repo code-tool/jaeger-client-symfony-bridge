@@ -11,7 +11,7 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 {
     private array $generators;
 
-    private string $name;
+    private string $name = '';
 
     public function __construct(array $generators = [])
     {
