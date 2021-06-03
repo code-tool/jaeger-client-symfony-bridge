@@ -50,7 +50,7 @@ class JaegerExtension extends Extension
             }
 
             foreach ($config['name_generator']['command'] as $pattern => $customGeneratorId) {
-                $regexp = \sprintf('/%s/', $item);
+                $regexp = \sprintf('/%s/', $pattern);
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
                 if ($container->has($shortenedGeneratorId)) {
                     $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
