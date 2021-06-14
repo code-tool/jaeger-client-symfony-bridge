@@ -25,7 +25,10 @@ class ContextExtractorChain implements ContextExtractorInterface
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {
-            if (null !== ($context = $queue->extract()->extract())) {
+            /** @var ContextExtractorInterface $extractor */
+            $extractor = $queue->extract();
+            $context = $extractor->extract();
+            if (null !== $context) {
                 return $context;
             }
         }
