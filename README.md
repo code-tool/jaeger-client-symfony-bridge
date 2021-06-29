@@ -44,7 +44,7 @@ You can configure custom name generators based on regular expression pattern, wh
 
 Configuration for this feature looks like key-value list, where key - regexp pattern, value - custom name generator DI service id (see details below).
 
-Name generator should implement an 'TODO' interface.
+Name generator should implement an `Jaeger\Symfony\Name\Generator\NameGeneratorInterface` interface.
 As a custom name generator you can specify a full DI service id, or just the suffix if your name generator service is named as `jaeger.name.generator.*`.
 Keys are considered body of the regular expression pattern, do not put any modifiers (e.g. `/i`, `/g`) or slashes; `route` of the request or `name` of the command should match to use alternative generator.
 Expressions are checked top to bottom, if no match is found, default generator will be used

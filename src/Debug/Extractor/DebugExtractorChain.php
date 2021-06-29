@@ -23,7 +23,10 @@ class DebugExtractorChain implements DebugExtractorInterface
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {
-            if ('' !== ($debugId = $queue->extract()->getDebug())) {
+            /** @var DebugExtractorInterface $extractor */
+            $extractor = $queue->extract();
+            $debugId = $extractor->getDebug();
+            if ('' !== $debugId) {
                 return $debugId;
             }
         }

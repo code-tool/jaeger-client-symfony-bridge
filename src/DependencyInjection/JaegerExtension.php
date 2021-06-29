@@ -11,13 +11,14 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class JaegerExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources')
         );
         $loader->load('services.yml');
+
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
@@ -31,35 +32,35 @@ class JaegerExtension extends Extension
                 $loader->load('shorten.yml');
                 $container->setParameter('jaeger.name.max_length', $config['name_generator']['max_length']);
             }
-            foreach ($config['name_generator']['request'] as $item => $customGeneratorId) {
-                $regexp = \sprintf('/%s/', $item);
+
+            foreach ($config['name_generator']['request'] as $pattern => $customGeneratorId) {
+                $regexp = \sprintf('/%s/', $pattern);
+
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
                 if ($container->has($shortenedGeneratorId)) {
-                    $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
-                        'add',
-                        [$regexp, new Reference($shortenedGeneratorId)]
-                    );
-                } else {
-                    $container->getDefinition('jaeger.name.generator.request')->addMethodCall(
+                    $customGeneratorId = $shortenedGeneratorId;
+                }
+
+                $container->getDefinition('jaeger.name.generator.request')
+                    ->addMethodCall(
                         'add',
                         [$regexp, new Reference($customGeneratorId)]
                     );
-                }
             }
+
             foreach ($config['name_generator']['command'] as $pattern => $customGeneratorId) {
-                $regexp = \sprintf('/%s/', $item);
+                $regexp = \sprintf('/%s/', $pattern);
+
                 $shortenedGeneratorId = \sprintf('jaeger.name.generator.%s', $customGeneratorId);
                 if ($container->has($shortenedGeneratorId)) {
-                    $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
-                        'add',
-                        [$regexp, new Reference($shortenedGeneratorId)]
-                    );
-                } else {
-                    $container->getDefinition('jaeger.name.generator.command')->addMethodCall(
+                    $customGeneratorId = $shortenedGeneratorId;
+                }
+
+                $container->getDefinition('jaeger.name.generator.command')
+                    ->addMethodCall(
                         'add',
                         [$regexp, new Reference($customGeneratorId)]
                     );
-                }
             }
         }
     }

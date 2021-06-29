@@ -9,10 +9,16 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
 {
+    /**
+     * @var NameGeneratorInterface[] Key - regexp, value - name generator
+     */
     private array $generators;
 
-    private string $name;
+    private string $name = '';
 
+    /**
+     * @param NameGeneratorInterface[] $generators Key - regexp, value - name generator
+     */
     public function __construct(array $generators = [])
     {
         $this->generators = $generators;
@@ -36,10 +42,11 @@ class CommandNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function onCommand(ConsoleCommandEvent $event): void
     {
-        if (null === $event->getCommand()) {
+        if (null === $command = $event->getCommand()) {
             return;
         }
-        $this->name = (string)$event->getCommand()->getName();
+
+        $this->name = (string)$command->getName();
     }
 
     public function onTerminate(): CommandNameGenerator

@@ -9,10 +9,16 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
 {
+    /**
+     * @var NameGeneratorInterface[] Key - regexp, value - name generator
+     */
     private array $generators;
 
-    private string $route;
+    private string $route = '';
 
+    /**
+     * @param NameGeneratorInterface[] $generators Key - regexp, value - name generator
+     */
     public function __construct(array $generators = [])
     {
         $this->generators = $generators;

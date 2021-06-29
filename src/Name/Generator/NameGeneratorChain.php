@@ -25,7 +25,7 @@ class NameGeneratorChain implements NameGeneratorInterface
         while (false === $queue->isEmpty()) {
             /** @var NameGeneratorInterface $generator */
             $generator = $queue->extract();
-            $name = $generator->generate()
+            $name = $generator->generate();
             if ('' !== $name) {
                 return $name;
             }
