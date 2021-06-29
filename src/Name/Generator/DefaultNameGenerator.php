@@ -11,15 +11,14 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
 {
-    private $name = '';
-
-    public const MAX_LENGTH = 64;
+    private string $name = '';
 
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onRequest', 30],
-            ConsoleCommandEvent::class => ['onCommand', 30],
+            // Subscribe after route was resolved and request attributes were set
+            RequestEvent::class => ['onRequest', 31],
+            ConsoleCommandEvent::class => ['onCommand', 31],
             TerminateEvent::class => ['onTerminate', -16384],
             ConsoleTerminateEvent::class => ['onTerminate'],
         ];
@@ -27,29 +26,25 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function onCommand(ConsoleCommandEvent $event): void
     {
-        $this->name = $event->getCommand()->getName();
-    }
-
-    public function setName(string $name)
-    {
-        if (self::MAX_LENGTH < strlen($name)) {
-            $name = substr($name, 0, self::MAX_LENGTH);
+        if (null === $command = $event->getCommand()) {
+            return;
         }
-        $this->name = $name;
+
+        $this->name = (string)$command->getName();
     }
 
     public function onRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        if (null !== ($fragment = $request->attributes->get('is_fragment'))) {
-            $name = ($controller = $request->attributes->get('_controller', null))
+        if (null !== $request->attributes->get('is_fragment')) {
+            $this->name = (null !== $controller = $request->attributes->get('_controller', null))
                 ? sprintf('fragment.%s', $controller)
                 : 'fragment';
-            $this->setName($name);
 
             return;
         }
-        $this->setName($request->attributes->get('_route', $request->getRequestUri()));
+
+        $this->name = $request->attributes->get('_route', $request->getRequestUri());
     }
 
     public function onTerminate(): void

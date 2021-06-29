@@ -5,7 +5,7 @@ namespace Jaeger\Symfony\Name\Generator;
 
 class NameGeneratorChain implements NameGeneratorInterface
 {
-    private $queue;
+    private \SplPriorityQueue $queue;
 
     public function __construct(\SplPriorityQueue $queue)
     {
@@ -23,8 +23,11 @@ class NameGeneratorChain implements NameGeneratorInterface
     {
         $queue = clone $this->queue;
         while (false === $queue->isEmpty()) {
-            if ('' !== ($debugId = $queue->extract()->generate())) {
-                return $debugId;
+            /** @var NameGeneratorInterface $generator */
+            $generator = $queue->extract();
+            $name = $generator->generate();
+            if ('' !== $name) {
+                return $name;
             }
         }
 

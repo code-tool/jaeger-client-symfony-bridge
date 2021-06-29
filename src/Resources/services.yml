@@ -12,6 +12,7 @@ parameters:
   env(JAEGER_DEBUG_COOKIE): 'debug'
   env(JAEGER_SERVICE_NAME): '%service_name%'
   env(JAEGER_SPAN_BATCH): '16'
+
 services:
   spl.stack:
     class: SplStack
@@ -125,11 +126,25 @@ services:
       - '@spl.priority.queue'
   jaeger.debug.extractor:
     alias: 'jaeger.debug.extractor.chain'
+  jaeger.name.generator.controller:
+    class: Jaeger\Symfony\Name\Generator\ControllerNameGenerator
+    tags:
+      - {name: 'kernel.event_subscriber' }
   jaeger.name.generator.default:
     class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
       - {name: 'jaeger.name.generator', priority: -1}
+  jaeger.name.generator.request:
+    class: Jaeger\Symfony\Name\Generator\RequestNameGenerator
+    tags:
+      - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.name.generator', priority: 1}
+  jaeger.name.generator.command:
+    class: Jaeger\Symfony\Name\Generator\CommandNameGenerator
+    tags:
+      - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.name.generator', priority: 1}
   jaeger.name.generator.chain:
     class: Jaeger\Symfony\Name\Generator\NameGeneratorChain
     arguments:

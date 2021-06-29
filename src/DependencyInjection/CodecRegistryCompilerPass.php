@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class CodecRegistryCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (false === $container->hasDefinition('jaeger.codec.registry')) {
             throw new \RuntimeException(

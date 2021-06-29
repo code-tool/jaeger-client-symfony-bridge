@@ -10,14 +10,14 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class GlobalSpanListener implements EventSubscriberInterface
 {
-    private $handler;
+    private GlobalSpanHandler $handler;
 
     public function __construct(GlobalSpanHandler $handler)
     {
         $this->handler = $handler;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             RequestEvent::class => ['onRequest', 30],
@@ -25,14 +25,14 @@ class GlobalSpanListener implements EventSubscriberInterface
         ];
     }
 
-    public function onTerminate()
+    public function onTerminate(): GlobalSpanListener
     {
         $this->handler->finish();
 
         return $this;
     }
 
-    public function onRequest(RequestEvent $event)
+    public function onRequest(RequestEvent $event): GlobalSpanListener
     {
         if (false === $this->isMainRequestEvent($event)) {
             return $this;
