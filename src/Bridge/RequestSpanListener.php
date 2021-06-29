@@ -15,6 +15,7 @@ use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
@@ -44,7 +45,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onResponse(ResponseEvent $event): void
     {
-        if ($event->isMasterRequest()) {
+        if (false === $this->isMainRequestEvent($event)) {
             return;
         }
         if ($this->spans->isEmpty()) {
@@ -55,7 +56,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event): void
     {
-        if ($event->isMasterRequest()) {
+        if (false === $this->isMainRequestEvent($event)) {
             return;
         }
         $request = $event->getRequest();
@@ -85,5 +86,21 @@ class RequestSpanListener implements EventSubscriberInterface
             ->addTag(new ErrorTag())
             ->addLog(new ErrorLog($exception->getMessage(), $exception->getTraceAsString()))
         ;
+    }
+
+    /**
+     * Use non-deprecated check method if availble
+     *
+     * @param KernelEvent $event
+     *
+     * @return bool
+     */
+    private function isMainRequestEvent(KernelEvent $event): bool
+    {
+        if (\method_exists($event, 'isMainRequest')) {
+            return $event->isMainRequest();
+        }
+
+        return $event->isMasterRequest();
     }
 }

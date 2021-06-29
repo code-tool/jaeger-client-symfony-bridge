@@ -8,6 +8,7 @@ use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class AppStartSpanListener implements EventSubscriberInterface
@@ -27,7 +28,7 @@ class AppStartSpanListener implements EventSubscriberInterface
     public function onRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-        if (false === $event->isMasterRequest()) {
+        if (false === $this->isMainRequestEvent($event)) {
             return $this;
         }
         $this->tracer
@@ -39,5 +40,21 @@ class AppStartSpanListener implements EventSubscriberInterface
             ->finish();
 
         return $this;
+    }
+
+    /**
+     * Use non-deprecated check method if availble
+     *
+     * @param KernelEvent $event
+     *
+     * @return bool
+     */
+    private function isMainRequestEvent(KernelEvent $event): bool
+    {
+        if (\method_exists($event, 'isMainRequest')) {
+            return $event->isMainRequest();
+        }
+
+        return $event->isMasterRequest();
     }
 }

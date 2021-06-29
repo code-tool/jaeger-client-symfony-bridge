@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jaeger\Symfony\Debug\Extractor;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
@@ -20,7 +21,7 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
 
     public function onRequest(RequestEvent $event): void
     {
-        if (false === $event->isMasterRequest()) {
+        if (false === $this->isMainRequestEvent($event)) {
             return;
         }
         $request = $event->getRequest();
@@ -32,7 +33,7 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
 
     public function onTerminate(TerminateEvent $event): void
     {
-        if (false === $event->isMasterRequest()) {
+        if (false === $this->isMainRequestEvent($event)) {
             return;
         }
         $this->debugId = '';
@@ -49,5 +50,21 @@ class CookieDebugExtractor implements DebugExtractorInterface, EventSubscriberIn
             RequestEvent::class => ['onRequest', 16384],
             TerminateEvent::class => ['onTerminate'],
         ];
+    }
+
+    /**
+     * Use non-deprecated check method if availble
+     *
+     * @param KernelEvent $event
+     *
+     * @return bool
+     */
+    private function isMainRequestEvent(KernelEvent $event): bool
+    {
+        if (\method_exists($event, 'isMainRequest')) {
+            return $event->isMainRequest();
+        }
+
+        return $event->isMasterRequest();
     }
 }

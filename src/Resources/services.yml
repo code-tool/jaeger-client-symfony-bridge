@@ -139,9 +139,6 @@ services:
   jaeger.span.handler.background:
     class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
     arguments: ['@jaeger.tracer']
-  jaeger.span.handler.gloabal:
-    alias: jaeger.span.handler.global
-    deprecated: 'The "%alias_id%" service is deprecated. Use "jaeger.span.handler.global".'
   jaeger.span.handler.global:
     class: Jaeger\Symfony\Bridge\GlobalSpanHandler
     arguments: ['@jaeger.tracer', '@jaeger.name.generator']
@@ -198,3 +195,7 @@ services:
       - '@jaeger.span.manager'
     tags:
       - {name: 'kernel.event_subscriber'}
+  # deprecated since 3.5.0
+  jaeger.span.handler.gloabal:
+    alias: jaeger.span.handler.global
+
