@@ -26,7 +26,7 @@ class DeprecatedAliasesCompilerPass implements CompilerPassInterface
      *
      * symfony/dependency-injection v5.1 introduces a deprecation notice when calling
      * setDeprecation() with less than 3 args and the
-     * `Symfony\Component\DependencyInjection\Dumper\Preloader` class was
+     * `Symfony\Component\DependencyInjection\Compiler\AliasDeprecatedPublicServicesPass` class was
      * introduced at the same time. By checking if this class exists,
      * we can determine the correct param count to use when calling setDeprecated.
      *
@@ -37,8 +37,6 @@ class DeprecatedAliasesCompilerPass implements CompilerPassInterface
      */
     private function getDeprecationMsg(string $message, string $version): array
     {
-        // \Symfony\Component\DependencyInjection\Compiler\AliasDeprecatedPublicServicesPass
-        // introduced in symfony/dependency-injection 5.1.0
         if (class_exists(AliasDeprecatedPublicServicesPass::class)) {
             return [
                 'code-tool/jaeger-client-symfony-bridge',
