@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\DependencyInjection;
 
+use Symfony\Component\DependencyInjection\Compiler\AliasDeprecatedPublicServicesPass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Dumper\Preloader;
 
 class DeprecatedAliasesCompilerPass implements CompilerPassInterface
 {
@@ -37,7 +37,9 @@ class DeprecatedAliasesCompilerPass implements CompilerPassInterface
      */
     private function getDeprecationMsg(string $message, string $version): array
     {
-        if (class_exists(Preloader::class)) {
+        // \Symfony\Component\DependencyInjection\Compiler\AliasDeprecatedPublicServicesPass
+        // introduced in symfony/dependency-injection 5.1.0
+        if (class_exists(AliasDeprecatedPublicServicesPass::class)) {
             return [
                 'code-tool/jaeger-client-symfony-bridge',
                 $version,
