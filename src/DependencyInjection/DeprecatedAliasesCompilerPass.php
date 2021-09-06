@@ -45,6 +45,6 @@ class DeprecatedAliasesCompilerPass implements CompilerPassInterface
             ];
         }
 
-        return [$message];
+        return [true, $message];
     }
 }
