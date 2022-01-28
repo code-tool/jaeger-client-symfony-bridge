@@ -12,6 +12,7 @@ parameters:
   env(JAEGER_DEBUG_COOKIE): 'debug'
   env(JAEGER_SERVICE_NAME): '%service_name%'
   env(JAEGER_SPAN_BATCH): '16'
+  env(JAEGER_TRACE_128): false
 
 services:
   spl.stack:
@@ -41,7 +42,7 @@ services:
     arguments: ['%env(JAEGER_SAMPLER_TYPE)%', '%env(JAEGER_SAMPLER_PARAM)%']
   jaeger.span.factory:
     class: Jaeger\Span\Factory\SpanFactory
-    arguments: ['@id.generator.span', '@jaeger.sampler']
+    arguments: ['@id.generator.span', '@jaeger.sampler', '%env(bool:JAEGER_TRACE_128)%']
   client.thrift:
     class: Jaeger\Client\ThriftClient
     arguments: ['%env(JAEGER_SERVICE_NAME)%', '@thrift.agent', '%env(JAEGER_SPAN_BATCH)%']
