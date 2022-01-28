@@ -12,7 +12,7 @@ parameters:
   env(JAEGER_DEBUG_COOKIE): 'debug'
   env(JAEGER_SERVICE_NAME): '%service_name%'
   env(JAEGER_SPAN_BATCH): '16'
-  env(JAEGER_TRACE_128): false
+  env(JAEGER_TRACE_128): '0'
 
 services:
   spl.stack:
