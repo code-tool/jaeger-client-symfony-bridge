@@ -37,7 +37,7 @@ class RequestSpanListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onRequest', -1],
+            RequestEvent::class => ['onRequest', -1024],
             ResponseEvent::class => ['onResponse', -1024],
             ExceptionEvent::class => ['onKernelException', 0],
         ];
