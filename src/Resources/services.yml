@@ -131,21 +131,22 @@ services:
     class: Jaeger\Symfony\Name\Generator\ControllerNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.name.generator', priority: 2}
   jaeger.name.generator.default:
     class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: -1}
+      - {name: 'jaeger.name.generator', priority: -16384}
   jaeger.name.generator.request:
     class: Jaeger\Symfony\Name\Generator\RequestNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: 1}
+      - {name: 'jaeger.name.generator', priority: -1024}
   jaeger.name.generator.command:
     class: Jaeger\Symfony\Name\Generator\CommandNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: 1}
+      - {name: 'jaeger.name.generator', priority: -1024}
   jaeger.name.generator.chain:
     class: Jaeger\Symfony\Name\Generator\NameGeneratorChain
     arguments:
@@ -155,9 +156,10 @@ services:
   jaeger.span.handler.background:
     class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
     arguments: ['@jaeger.tracer']
-  jaeger.span.handler.global:
-    class: Jaeger\Symfony\Bridge\GlobalSpanHandler
+  jaeger.span.handler.main:
+    class: Jaeger\Symfony\Bridge\MainSpanHandler
     arguments: ['@jaeger.tracer', '@jaeger.name.generator']
+  jaeger.span.handler.global: '@jaeger.span.handler.main'
   jaeger.debug.listener:
     class: Jaeger\Symfony\Bridge\DebugListener
     arguments:
@@ -180,9 +182,14 @@ services:
       - '@jaeger.tracer'
     tags:
       - {name: 'kernel.event_subscriber' }
-  jaeger.global.span.listener:
-    class: Jaeger\Symfony\Bridge\GlobalSpanListener
-    arguments: ['@jaeger.span.handler.global']
+  jaeger.global.span.listener.lifecycle:
+    class: Jaeger\Symfony\Bridge\MainSpanLifecycleListener
+    arguments: ['@jaeger.span.handler.main']
+    tags:
+      - {name: 'kernel.event_subscriber' }
+  jaeger.global.span.listener.name:
+    class: Jaeger\Symfony\Bridge\MainSpanNameListener
+    arguments: ['@jaeger.span.handler.main']
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.app.start.listener:
@@ -201,8 +208,8 @@ services:
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.span.handler.listener.flush:
-    class: Jaeger\Symfony\Bridge\HandlerFlushListener
-    arguments: ['@jaeger.span.handler.background', '@jaeger.span.handler.global']
+    class: Jaeger\Symfony\Bridge\MainSpanFlushListener
+    arguments: ['@jaeger.span.handler.background', '@jaeger.span.handler.main']
     tags:
       - {name: 'kernel.event_subscriber' }
   jaeger.exception.listener:

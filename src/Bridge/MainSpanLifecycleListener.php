@@ -8,11 +8,11 @@ use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
-class GlobalSpanListener implements EventSubscriberInterface
+class MainSpanLifecycleListener implements EventSubscriberInterface
 {
-    private GlobalSpanHandler $handler;
+    private MainSpanHandler $handler;
 
-    public function __construct(GlobalSpanHandler $handler)
+    public function __construct(MainSpanHandler $handler)
     {
         $this->handler = $handler;
     }
@@ -20,19 +20,19 @@ class GlobalSpanListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onRequest', 25],
+            RequestEvent::class => ['onRequest', 1024],
             TerminateEvent::class => ['onTerminate', 4096],
         ];
     }
 
-    public function onTerminate(): GlobalSpanListener
+    public function onTerminate(): MainSpanLifecycleListener
     {
         $this->handler->finish();
 
         return $this;
     }
 
-    public function onRequest(RequestEvent $event): GlobalSpanListener
+    public function onRequest(RequestEvent $event): MainSpanLifecycleListener
     {
         if (false === $this->isMainRequestEvent($event)) {
             return $this;

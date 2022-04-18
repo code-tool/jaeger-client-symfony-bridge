@@ -3,41 +3,34 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Bridge;
 
-use Jaeger\Symfony\Tag\SymfonyComponentTag;
-use Jaeger\Symfony\Tag\SymfonyVersionTag;
-use Jaeger\Tag\SpanKindServerTag;
-use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
-class AppStartSpanListener implements EventSubscriberInterface
+class MainSpanNameListener implements EventSubscriberInterface
 {
-    private $tracer;
+    private MainSpanHandler $handler;
 
-    public function __construct(TracerInterface $tracer)
+    public function __construct(MainSpanHandler $handler)
     {
-        $this->tracer = $tracer;
+        $this->handler = $handler;
     }
 
     public static function getSubscribedEvents(): array
     {
-        return [RequestEvent::class => ['onRequest', 1023],];
+        return [
+            RequestEvent::class => ['onRequest', 30],
+        ];
     }
 
-    public function onRequest(RequestEvent $event)
+    public function onRequest(KernelEvent $event): MainSpanNameListener
     {
         if (false === $this->isMainRequestEvent($event)) {
             return $this;
         }
-
-        $this->tracer
-            ->start('symfony.start')
-            ->addTag(new SpanKindServerTag())
-            ->addTag(new SymfonyComponentTag())
-            ->addTag(new SymfonyVersionTag())
-            ->start((int)(1000000 * $event->getRequest()->server->get('REQUEST_TIME_FLOAT', microtime(true))))
-            ->finish();
+        $this->handler->name();
 
         return $this;
     }
