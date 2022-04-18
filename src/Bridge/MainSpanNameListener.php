@@ -25,8 +25,11 @@ class MainSpanNameListener implements EventSubscriberInterface
         ];
     }
 
-    public function onRequest(Request $request): MainSpanNameListener
+    public function onRequest(KernelEvent $event): MainSpanNameListener
     {
+        if (false === $this->isMainRequestEvent($event)) {
+            return $this;
+        }
         $this->handler->name();
 
         return $this;
