@@ -11,14 +11,9 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('jaeger');
-        if (true === method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            $rootNode = $treeBuilder->root('jaeger', 'array');
-        }
 
         // @formatter:off
-        $rootNode
+        $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('denylist')
                     ->canBeEnabled()
