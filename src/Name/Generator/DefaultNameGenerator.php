@@ -17,7 +17,7 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     {
         return [
             // Subscribe after route was resolved and request attributes were set
-            RequestEvent::class => ['onRequest', 31],
+            RequestEvent::class => ['onRequest', 30],
             ConsoleCommandEvent::class => ['onCommand', 31],
             TerminateEvent::class => ['onTerminate', -16384],
             ConsoleTerminateEvent::class => ['onTerminate'],

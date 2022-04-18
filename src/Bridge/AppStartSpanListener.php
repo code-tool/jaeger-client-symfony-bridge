@@ -22,21 +22,21 @@ class AppStartSpanListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return [RequestEvent::class => ['onRequest', -1],];
+        return [RequestEvent::class => ['onRequest', -1023],];
     }
 
     public function onRequest(RequestEvent $event)
     {
-        $request = $event->getRequest();
         if (false === $this->isMainRequestEvent($event)) {
             return $this;
         }
+
         $this->tracer
             ->start('symfony.start')
             ->addTag(new SpanKindServerTag())
             ->addTag(new SymfonyComponentTag())
             ->addTag(new SymfonyVersionTag())
-            ->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))))
+            ->start((int)(1000000 * $event->getRequest()->server->get('REQUEST_TIME_FLOAT', microtime(true))))
             ->finish();
 
         return $this;
