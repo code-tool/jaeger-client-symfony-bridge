@@ -131,21 +131,22 @@ services:
     class: Jaeger\Symfony\Name\Generator\ControllerNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
+      - {name: 'jaeger.name.generator', priority: 0}
   jaeger.name.generator.default:
     class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: -1}
+      - {name: 'jaeger.name.generator', priority: -16384}
   jaeger.name.generator.request:
     class: Jaeger\Symfony\Name\Generator\RequestNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: 1}
+      - {name: 'jaeger.name.generator', priority: -1024}
   jaeger.name.generator.command:
     class: Jaeger\Symfony\Name\Generator\CommandNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: 1}
+      - {name: 'jaeger.name.generator', priority: -1024}
   jaeger.name.generator.chain:
     class: Jaeger\Symfony\Name\Generator\NameGeneratorChain
     arguments:
