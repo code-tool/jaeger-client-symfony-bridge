@@ -9,6 +9,8 @@ use Jaeger\Http\HttpUriTag;
 use Jaeger\Log\ErrorLog;
 use Jaeger\Symfony\Name\Generator\NameGeneratorInterface;
 use Jaeger\Symfony\Tag\SymfonyComponentTag;
+use Jaeger\Symfony\Tag\SymfonyMainRequestTag;
+use Jaeger\Symfony\Tag\SymfonySubRequestTag;
 use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\ErrorTag;
 use Jaeger\Tag\SpanKindServerTag;
@@ -37,7 +39,7 @@ class RequestSpanListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onRequest', -1024],
+            RequestEvent::class => ['onRequest', 29],
             ResponseEvent::class => ['onResponse', -1024],
             ExceptionEvent::class => ['onKernelException', 0],
         ];
@@ -45,9 +47,6 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onResponse(ResponseEvent $event): void
     {
-        if ($this->isMainRequestEvent($event)) {
-            return;
-        }
         if ($this->spans->isEmpty()) {
             return;
         }
@@ -56,22 +55,23 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event): void
     {
-        if ($this->isMainRequestEvent($event)) {
-            return;
-        }
         $request = $event->getRequest();
-        $this->spans->push(
-            $this->tracer->start(
-                $this->nameGenerator->generate(),
-                [
-                    new HttpMethodTag($request->getMethod()),
-                    new HttpUriTag($request->getRequestUri()),
-                    new SpanKindServerTag(),
-                    new SymfonyComponentTag(),
-                    new SymfonyVersionTag(),
-                ]
-            )
+        $span = $this->tracer->start(
+            $this->nameGenerator->generate(),
+            [
+                new HttpMethodTag($request->getMethod()),
+                new HttpUriTag($request->getRequestUri()),
+                new SpanKindServerTag(),
+                new SymfonyComponentTag(),
+                new SymfonyVersionTag(),
+            ]
         );
+        if ($this->isMainRequestEvent($event)) {
+            $span->addTag(new SymfonyMainRequestTag());
+        } else {
+            $span->addTag(new SymfonySubRequestTag());
+        }
+        $this->spans->push($span);
     }
 
     public function onKernelException(ExceptionEvent $event): void
@@ -79,13 +79,10 @@ class RequestSpanListener implements EventSubscriberInterface
         if ($this->spans->isEmpty()) {
             return;
         }
-
         $exception = $event->getThrowable();
-
         $this->spans->top()
             ->addTag(new ErrorTag())
-            ->addLog(new ErrorLog($exception->getMessage(), $exception->getTraceAsString()))
-        ;
+            ->addLog(new ErrorLog($exception->getMessage(), $exception->getTraceAsString()));
     }
 
     /**

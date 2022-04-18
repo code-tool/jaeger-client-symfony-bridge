@@ -22,7 +22,7 @@ class AppStartSpanListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return [RequestEvent::class => ['onRequest', -1023],];
+        return [RequestEvent::class => ['onRequest', -1],];
     }
 
     public function onRequest(RequestEvent $event)

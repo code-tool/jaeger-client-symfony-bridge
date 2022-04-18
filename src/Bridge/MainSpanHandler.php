@@ -13,7 +13,7 @@ use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class GlobalSpanHandler
+class MainSpanHandler
 {
     /**
      * @var Span
@@ -32,10 +32,10 @@ class GlobalSpanHandler
         $this->nameGenerator = $nameGenerator;
     }
 
-    public function start(Request $request): GlobalSpanHandler
+    public function start(Request $request): MainSpanHandler
     {
         $this->span = $this->tracer->start(
-            $this->nameGenerator->generate(),
+            'main.start',
             [
                 new HttpMethodTag($request->getMethod()),
                 new HttpUriTag($request->getRequestUri()),
@@ -44,6 +44,16 @@ class GlobalSpanHandler
                 new SymfonyVersionTag(),
             ]
         )->start((int)(1000000 * $request->server->get('REQUEST_TIME_FLOAT', microtime(true))));
+
+        return $this;
+    }
+
+    public function name(): MainSpanHandler
+    {
+        if (null === $this->span) {
+            return $this;
+        }
+        $this->span->operationName = $this->nameGenerator->generate();
 
         return $this;
     }

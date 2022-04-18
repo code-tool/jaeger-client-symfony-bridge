@@ -6,13 +6,13 @@ namespace Jaeger\Symfony\Bridge;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
-class HandlerFlushListener implements EventSubscriberInterface
+class MainSpanFlushListener implements EventSubscriberInterface
 {
     private $backgroundHandler;
 
     private $globalHandler;
 
-    public function __construct(BackgroundSpanHandler $backgroundHandler, GlobalSpanHandler $globalHandler)
+    public function __construct(BackgroundSpanHandler $backgroundHandler, MainSpanHandler $globalHandler)
     {
         $this->backgroundHandler = $backgroundHandler;
         $this->globalHandler = $globalHandler;
