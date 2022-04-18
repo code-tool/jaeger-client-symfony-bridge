@@ -131,7 +131,6 @@ services:
     class: Jaeger\Symfony\Name\Generator\ControllerNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
-      - {name: 'jaeger.name.generator', priority: 2}
   jaeger.name.generator.default:
     class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
     tags:
