@@ -45,7 +45,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onResponse(ResponseEvent $event): void
     {
-        if (false === $this->isMainRequestEvent($event)) {
+        if ($this->isMainRequestEvent($event)) {
             return;
         }
         if ($this->spans->isEmpty()) {
@@ -56,7 +56,7 @@ class RequestSpanListener implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event): void
     {
-        if (false === $this->isMainRequestEvent($event)) {
+        if ($this->isMainRequestEvent($event)) {
             return;
         }
         $request = $event->getRequest();
