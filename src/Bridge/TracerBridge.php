@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Jaeger\Symfony\Bridge;
 
 use Jaeger\Tracer\FlushableInterface;
+use Jaeger\Tracer\ResettableInterface;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
@@ -28,5 +29,8 @@ class TracerBridge implements EventSubscriberInterface
     public function onTerminate(): void
     {
         $this->tracer->flush();
+        if ($this->tracer instanceof ResettableInterface) {
+            $this->tracer->reset();
+        }
     }
 }
