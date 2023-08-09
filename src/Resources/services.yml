@@ -81,6 +81,8 @@ services:
   jaeger.tracer:
     class: Jaeger\Tracer\Tracer
     parent: jaeger.tracer.abstract
+    tags:
+      - { name: 'kernel.reset', method: 'reset' }
   jaeger.debuggable: '@jaeger.tracer'
   jaeger.flushable: '@jaeger.tracer'
   jaeger.context.extractor.env:
