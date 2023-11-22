@@ -6,8 +6,9 @@ namespace Jaeger\Symfony\Name\Generator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Contracts\Service\ResetInterface;
 
-class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
+class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInterface, ResetInterface
 {
     /**
      * @var NameGeneratorInterface[] Key - regexp, value - name generator
@@ -47,9 +48,14 @@ class RequestNameGenerator implements NameGeneratorInterface, EventSubscriberInt
 
     public function onTerminate(): RequestNameGenerator
     {
-        $this->route = '';
+        $this->reset();
 
         return $this;
+    }
+
+    public function reset(): void
+    {
+        $this->route = '';
     }
 
     public function generate(): string

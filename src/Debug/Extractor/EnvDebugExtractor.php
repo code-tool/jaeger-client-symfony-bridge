@@ -5,8 +5,9 @@ namespace Jaeger\Symfony\Debug\Extractor;
 
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInterface
+class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInterface, ResetInterface
 {
     private $envName;
 
@@ -27,9 +28,14 @@ class EnvDebugExtractor implements DebugExtractorInterface, EventSubscriberInter
 
     public function onTerminate()
     {
-        $this->debugId = '';
+        $this->reset();
 
         return $this;
+    }
+
+    public function reset(): void
+    {
+        $this->debugId = '';
     }
 
     public function getDebug(): string

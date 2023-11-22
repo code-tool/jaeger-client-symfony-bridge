@@ -6,8 +6,9 @@ namespace Jaeger\Symfony\Name\Generator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Contracts\Service\ResetInterface;
 
-class ControllerNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
+class ControllerNameGenerator implements NameGeneratorInterface, EventSubscriberInterface, ResetInterface
 {
     private string $controller = '';
 
@@ -26,6 +27,11 @@ class ControllerNameGenerator implements NameGeneratorInterface, EventSubscriber
     }
 
     public function onTerminate(): void
+    {
+        $this->reset();
+    }
+
+    public function reset(): void
     {
         $this->controller = '';
     }

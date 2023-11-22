@@ -10,8 +10,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Contracts\Service\ResetInterface;
 
-class HeaderContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
+class HeaderContextExtractor implements ContextExtractorInterface, EventSubscriberInterface, ResetInterface
 {
     /**
      * @var CodecInterface[]
@@ -49,7 +50,8 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         if (false === $this->isMainRequestEvent($event)) {
             return;
         }
-        $this->context = null;
+
+        $this->reset();
     }
 
     public function onRequest(RequestEvent $event): void
@@ -78,5 +80,10 @@ class HeaderContextExtractor implements ContextExtractorInterface, EventSubscrib
         }
 
         return $event->isMasterRequest();
+    }
+
+    public function reset(): void
+    {
+        $this->context = null;
     }
 }
