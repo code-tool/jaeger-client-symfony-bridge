@@ -17,6 +17,9 @@
     "symfony/yaml": "^4.4|^5.4|^6.0",
     "symfony/service-contracts": "^2|^3"
   },
+  "require-dev": {
+    "vimeo/psalm": "^5.15"
+  },
   "minimum-stability": "dev",
   "prefer-stable": true
 }

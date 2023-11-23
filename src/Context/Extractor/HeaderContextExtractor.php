@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Jaeger\Symfony\Context\Extractor;
 
-use Jaeger\Codec\CodecInterface;
 use Jaeger\Codec\CodecRegistry;
 use Jaeger\Span\Context\SpanContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -14,9 +13,6 @@ use Symfony\Contracts\Service\ResetInterface;
 
 class HeaderContextExtractor implements ContextExtractorInterface, EventSubscriberInterface, ResetInterface
 {
-    /**
-     * @var CodecInterface[]
-     */
     private $registry;
 
     private $format;

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+    phpVersion="8.1" used to avoid `ReservedWord` issues with installed Symfony 6+ packages (which required 8.1).
+    Probably there existent another easy workaround, but we didn't find it yet.
+ -->
+<!--suppress XmlDefaultAttributeValue Psalm emits warning: "findUnusedCode" will default to "true" in Psalm 6. You should explicitly enable or disable this setting. -->
+<psalm
+    errorLevel="6"
+    phpVersion="8.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
+>
+    <projectFiles>
+        <directory name="src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <UndefinedMethod>
+            <errorLevel type="suppress">
+                <!-- BC layer for Symfony 4.4 -->
+                <referencedMethod name="Symfony\Component\HttpKernel\Event\KernelEvent::isMasterRequest" />
+
+                <!-- Psalm doesn't know about type-system of `symfony/config` -->
+                <file name="src/DependencyInjection/Configuration.php"/>
+            </errorLevel>
+        </UndefinedMethod>
+    </issueHandlers>
+</psalm>

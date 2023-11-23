@@ -12,9 +12,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EnvContextExtractor implements ContextExtractorInterface, EventSubscriberInterface
 {
-    /**
-     * @var CodecInterface[]
-     */
     private $registry;
 
     private $format;
