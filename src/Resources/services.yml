@@ -103,6 +103,7 @@ services:
     tags:
       - {name: 'kernel.event_subscriber' }
       - {name: 'jaeger.context.extractor'}
+      - {name: 'kernel.reset', method: 'reset'}
   jaeger.context.extractor.chain:
     class: Jaeger\Symfony\Context\Extractor\ContextExtractorChain
     arguments:
@@ -116,6 +117,7 @@ services:
     tags:
       - {name: 'kernel.event_subscriber' }
       - {name: 'jaeger.debug.extractor'}
+      - {name: 'kernel.reset', method: 'reset'}
   jaeger.debug.extractor.cookie:
     class: Jaeger\Symfony\Debug\Extractor\CookieDebugExtractor
     arguments:
@@ -123,6 +125,7 @@ services:
     tags:
       - {name: 'kernel.event_subscriber' }
       - {name: 'jaeger.debug.extractor'}
+      - {name: 'kernel.reset', method: 'reset'}
   jaeger.debug.extractor.chain:
     class: Jaeger\Symfony\Debug\Extractor\DebugExtractorChain
     arguments:
@@ -133,16 +136,19 @@ services:
     class: Jaeger\Symfony\Name\Generator\ControllerNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
+      - {name: 'kernel.reset', method: 'reset'}
   jaeger.name.generator.default:
     class: Jaeger\Symfony\Name\Generator\DefaultNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
       - {name: 'jaeger.name.generator', priority: -16384}
+      - {name: 'kernel.reset', method: 'reset'}
   jaeger.name.generator.request:
     class: Jaeger\Symfony\Name\Generator\RequestNameGenerator
     tags:
       - {name: 'kernel.event_subscriber' }
       - {name: 'jaeger.name.generator', priority: -1024}
+      - {name: 'kernel.reset', method: 'reset'}
   jaeger.name.generator.command:
     class: Jaeger\Symfony\Name\Generator\CommandNameGenerator
     tags:
@@ -157,9 +163,13 @@ services:
   jaeger.span.handler.background:
     class: Jaeger\Symfony\Bridge\BackgroundSpanHandler
     arguments: ['@jaeger.tracer']
+    tags:
+      - { name: 'kernel.reset', method: 'reset' }
   jaeger.span.handler.main:
     class: Jaeger\Symfony\Bridge\MainSpanHandler
     arguments: ['@jaeger.tracer', '@jaeger.name.generator']
+    tags:
+      - { name: 'kernel.reset', method: 'reset' }
   jaeger.span.handler.global: '@jaeger.span.handler.main'
   jaeger.debug.listener:
     class: Jaeger\Symfony\Bridge\DebugListener

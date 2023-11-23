@@ -12,8 +12,9 @@ use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Service\ResetInterface;
 
-class MainSpanHandler
+class MainSpanHandler implements ResetInterface
 {
     /**
      * @var Span
@@ -72,6 +73,12 @@ class MainSpanHandler
             return;
         }
         $this->span->finish((int)$this->durationUsec);
-        $this->span = $this->durationUsec = null;
+        $this->reset();
+    }
+
+    public function reset(): void
+    {
+        $this->span = null;
+        $this->durationUsec = null;
     }
 }

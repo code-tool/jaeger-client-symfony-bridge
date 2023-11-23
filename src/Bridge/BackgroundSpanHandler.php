@@ -12,8 +12,9 @@ use Jaeger\Symfony\Tag\SymfonyVersionTag;
 use Jaeger\Tag\SpanKindServerTag;
 use Jaeger\Tracer\TracerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Service\ResetInterface;
 
-class BackgroundSpanHandler
+class BackgroundSpanHandler implements ResetInterface
 {
     private ?SpanInterface $span = null;
 
@@ -47,8 +48,13 @@ class BackgroundSpanHandler
             return $this;
         }
         $this->span->finish();
-        $this->span = null;
+        $this->reset();
 
         return $this;
+    }
+
+    public function reset(): void
+    {
+        $this->span = null;
     }
 }

@@ -8,8 +8,9 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Contracts\Service\ResetInterface;
 
-class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInterface
+class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInterface, ResetInterface
 {
     private string $name = '';
 
@@ -48,6 +49,11 @@ class DefaultNameGenerator implements NameGeneratorInterface, EventSubscriberInt
     }
 
     public function onTerminate(): void
+    {
+        $this->reset();
+    }
+
+    public function reset(): void
     {
         $this->name = '';
     }
