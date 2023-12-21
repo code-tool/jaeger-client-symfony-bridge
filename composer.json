@@ -9,12 +9,12 @@
   "require": {
     "php": "^7.4|^8.0",
     "code-tool/jaeger-client-php": "^3.4",
-    "symfony/config": "^4.4|^5.4|^6.0",
-    "symfony/console": "^4.4|^5.4|^6.0",
-    "symfony/dependency-injection": "^4.4|^5.4|^6.0",
-    "symfony/event-dispatcher": "^4.4|^5.4|^6.0",
-    "symfony/http-kernel": "^4.4|^5.4|^6.0",
-    "symfony/yaml": "^4.4|^5.4|^6.0",
+    "symfony/config": "^4.4|^5.4|^6.0|^7.0",
+    "symfony/console": "^4.4|^5.4|^6.0|^7.0",
+    "symfony/dependency-injection": "^4.4|^5.4|^6.0|^7.0",
+    "symfony/event-dispatcher": "^4.4|^5.4|^6.0|^7.0",
+    "symfony/http-kernel": "^4.4|^5.4|^6.0|^7.0",
+    "symfony/yaml": "^4.4|^5.4|^6.0|^7.0",
     "symfony/service-contracts": "^2|^3"
   },
   "require-dev": {
