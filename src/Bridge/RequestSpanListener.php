@@ -100,4 +100,12 @@ class RequestSpanListener implements EventSubscriberInterface
 
         return $event->isMasterRequest();
     }
+
+    public function reset(): void
+    {
+        // make stack empty to avoid memory leaks
+        while (false === $this->spans->isEmpty()) {
+            $this->spans->pop();
+        }
+    }
 }
