@@ -192,12 +192,13 @@ services:
       - '@jaeger.name.generator'
       - '@jaeger.tracer'
     tags:
-      - {name: 'kernel.event_subscriber' }
+      - { name: 'kernel.event_subscriber' }
+      - { name: 'kernel.reset', method: 'reset' }
   jaeger.global.span.listener.lifecycle:
     class: Jaeger\Symfony\Bridge\MainSpanLifecycleListener
     arguments: ['@jaeger.span.handler.main']
     tags:
-      - {name: 'kernel.event_subscriber' }
+      - { name: 'kernel.event_subscriber' }
   jaeger.global.span.listener.name:
     class: Jaeger\Symfony\Bridge\MainSpanNameListener
     arguments: ['@jaeger.span.handler.main']
